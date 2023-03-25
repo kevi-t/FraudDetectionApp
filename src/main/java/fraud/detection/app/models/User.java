@@ -1,10 +1,13 @@
 package fraud.detection.app.models;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,7 +23,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long userId;
+    private Long id;
 
     //General info
     @NotEmpty(message = "This field 'model' should not be empty")
@@ -57,13 +60,8 @@ public class User implements UserDetails {
     @NotNull(message = "This field 'model' should not be empty")
     private String country;
 
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-//    private Account account;
-
     @CreationTimestamp
     private LocalDateTime created_at;
-    @UpdateTimestamp
-    private LocalDateTime updated_at;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

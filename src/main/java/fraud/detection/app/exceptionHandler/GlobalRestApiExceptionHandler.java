@@ -21,7 +21,6 @@ public class GlobalRestApiExceptionHandler {
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<Map<String, List<String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
                 List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
-                //ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
                 int  code = ex.getBody().getStatus();
                 return new ResponseEntity<>(getErrorsMap(errors, Collections.singletonList(String.valueOf(code))), new HttpHeaders(),ex.getBody().getStatus());
         }
@@ -32,21 +31,4 @@ public class GlobalRestApiExceptionHandler {
                 errorResponse.put("code", code);
                 return errorResponse;
         }
-//        @ExceptionHandler(UsernameNotFoundException.class)
-//        public ResponseEntity<Map<String, List<String>>> handleNotFoundException(UsernameNotFoundException ex) {
-//                List<String> errors = Collections.singletonList(ex.getMessage());
-//                return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.NOT_FOUND);
-//        }
-//
-//        @ExceptionHandler(Exception.class)
-//        public final ResponseEntity<Map<String, List<String>>> handleGeneralExceptions(Exception ex) {
-//                List<String> errors = Collections.singletonList(ex.getMessage());
-//                return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//
-//        @ExceptionHandler(RuntimeException.class)
-//        public final ResponseEntity<Map<String, List<String>>> handleRuntimeExceptions(RuntimeException ex) {
-//                List<String> errors = Collections.singletonList(ex.getMessage());
-//                return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
 }

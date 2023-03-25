@@ -18,14 +18,9 @@ import java.time.LocalDateTime;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long accountId;
+    private Long id;
     private  String accountNumber;
     private double accountBalance;//field to update
-
-//    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-//    private User user;
-    @CreationTimestamp
-    private LocalDateTime created_at;
     @UpdateTimestamp
     private LocalDateTime updated_at;
 }

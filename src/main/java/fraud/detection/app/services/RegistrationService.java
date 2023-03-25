@@ -25,14 +25,17 @@ public class RegistrationService {
 
         String phone=request.getMobileNumber();
         try{
-            if(userRepository.findUserByMobileNumber(phone)==null) {
+            if (userRepository.findUserByEmail(request.getEmail())!=null){
+                return  UniversalResponse.builder().message("User with this email Already Exist").status(0).build();
+            }
+            else if(userRepository.findUserByMobileNumber(phone)==null) {
 
                 var user = User.builder().firstName(request.getFirstName()).middleName(request.getMiddleName()).lastName(request.getLastName()).email(request.getEmail()).mobileNumber(request.getMobileNumber())
                         .password(passwordEncoder.encode(request.getPassword())).gender(request.getGender()).dateOfBirth(request.getDateOfBirth()).occupation(request.getOccupation()).country(request.getCountry())
                         .city(request.getCity()).state(request.getState()).currentAddress(request.getCurrentAddress()).permanentAddress(request.getPermanentAddress()).pinCode(request.getPinCode()).build();
                 try {
                     userRepository.save(user);
-                    var account = Account.builder().accountNumber(user.getMobileNumber()).accountBalance(0.00).build();//.user(user)
+                    var account = Account.builder().accountNumber(user.getMobileNumber()).accountBalance(0.50).build();//.user(user)
                     accountRepository.save(account);
                     return  UniversalResponse.builder().message("User Registered Successfully").status(0).build();
                 }

@@ -14,17 +14,10 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class TransactionDTO {
-
+public class WithdrawDTO {
     @NotEmpty(message = "This field 'accountNumber' should not be empty")
     private String accountNumber;
     @NotNull
-    @DecimalMin(value = "50",message ="The minimum deposit amount is 50" )
+    @DecimalMin(value = "20",message ="The minimum withdraw amount is 20" )
     private Double transactionAmount;
-//    @NotEmpty(message = "This field 'Type of Transaction' should not be empty")
-//    private String transactionType;
-//    @NotEmpty(message = "This field 'sender' should not be empty")
-//    private Long userId;
-//    @NotEmpty(message = "This field 'receiver' should not be empty")
-//    private Long terminalId;
 }

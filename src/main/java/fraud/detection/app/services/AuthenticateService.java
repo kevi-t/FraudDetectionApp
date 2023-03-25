@@ -47,7 +47,7 @@ public class AuthenticateService {
             }
         }
         catch (Exception ex){
-            System.out.println(ex);
+            ex.printStackTrace();
         }
         return response;
     }
