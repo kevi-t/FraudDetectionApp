@@ -40,7 +40,7 @@ public class TransactionService {
                 accountNumber2.setAccountBalance(newAccountBalance);
                 accountRepository.save(accountNumber2);
 
-                Transaction transaction = Transaction.builder().accountNumber(request.getAccountNumber()).transactionAmount(request.getTransactionAmount()).build();
+                Transaction transaction = Transaction.builder().accountNumber(request.getAccountNumber()).terminalId(request.getAccountNumber()).transactionAmount(request.getTransactionAmount()).transactionType("DEPOSIT").build();
                 transactionRepository.save(transaction);
 
                return  UniversalResponse.builder().message("Deposit Request Successful").balance(accountNumber2.getAccountBalance()).build();
@@ -69,7 +69,7 @@ public class TransactionService {
                     accountNumber2.setAccountBalance(newAccountBalance);
                     accountRepository.save(accountNumber2);
 
-                    Transaction transaction = Transaction.builder().accountNumber(request.getAccountNumber()).transactionAmount(request.getTransactionAmount()).build();
+                    Transaction transaction = Transaction.builder().accountNumber(request.getAccountNumber()).terminalId(request.getAccountNumber()).transactionAmount(request.getTransactionAmount()).transactionType("WITHDRAW").build();
                     transactionRepository.save(transaction);
                 }
                 return  UniversalResponse.builder().message("Withdraw Request Successful").balance(accountNumber2.getAccountBalance()).build();
@@ -108,11 +108,8 @@ public class TransactionService {
                 toAccountNumber.setAccountBalance(toNewAccountBalance);
                 accountRepository.save(toAccountNumber);
 
-                Transaction transaction = Transaction.builder().accountNumber(request.getSenderAccountNumber()).transactionAmount(request.getTransactionAmount()).build();
+                Transaction transaction = Transaction.builder().accountNumber(request.getSenderAccountNumber()).terminalId(request.getReceiverAccountNumber()).transactionAmount(request.getTransactionAmount()).transactionType("SEND MONEY").build();
                 transactionRepository.save(transaction);
-
-                Transaction transaction2 = Transaction.builder().accountNumber(request.getReceiverAccountNumber()).transactionAmount(request.getTransactionAmount()).build();
-                transactionRepository.save(transaction2);
 
                 return  UniversalResponse.builder().message("Send Money Request to Account: "+toAccountNo+" Successful").balance(fromAccountNumber.getAccountBalance()).build();
             }

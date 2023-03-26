@@ -35,7 +35,7 @@ public class RegistrationService {
                         .city(request.getCity()).state(request.getState()).currentAddress(request.getCurrentAddress()).permanentAddress(request.getPermanentAddress()).pinCode(request.getPinCode()).build();
                 try {
                     userRepository.save(user);
-                    var account = Account.builder().accountNumber(user.getMobileNumber()).accountBalance(0.50).build();//.user(user)
+                    var account = Account.builder().accountNumber(user.getMobileNumber()).accountBalance(0.55).build();//.user(user)
                     accountRepository.save(account);
                     return  UniversalResponse.builder().message("User Registered Successfully").status(0).build();
                 }

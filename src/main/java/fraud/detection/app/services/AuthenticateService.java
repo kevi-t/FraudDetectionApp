@@ -1,7 +1,9 @@
 package fraud.detection.app.services;
 
 import fraud.detection.app.dto.AuthenticationDTO;
+import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
+import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.JwtTokenUtil;
@@ -21,6 +23,7 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     public UniversalResponse response;
 
     public UniversalResponse login(AuthenticationDTO request) {
@@ -39,7 +42,8 @@ public class AuthenticateService {
             else {
                 try{
                     String jwt = jwtTokenUtil.createToken(request.getMobileNumber());
-                    return  UniversalResponse.builder().message(jwt).build();
+                    Account accountNumber = accountRepository.findByAccountNumber(request.getMobileNumber());
+                    return  UniversalResponse.builder().message("Login Successful").balance(accountNumber.getAccountBalance()).data(jwt).build();
                 }
                 catch (Exception ex){
                     System.out.println("Token failure");

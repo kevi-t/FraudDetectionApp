@@ -19,5 +19,5 @@ public class WithdrawDTO {
     private String accountNumber;
     @NotNull
     @DecimalMin(value = "20",message ="The minimum withdraw amount is 20" )
-    private Double transactionAmount;
+    private double transactionAmount;
 }
