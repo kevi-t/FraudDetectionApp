@@ -1,0 +1,254 @@
+{
+	"info": {
+		"_postman_id": "83e14f49-d0ce-4e6e-99b3-62131d664b12",
+		"name": "Fraud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22113006"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"firstName\":\"James\",\r\n\"middleName\":\"Otieno\",\r\n\"lastName\":\"Juma\",\r\n\"dateOfBirth\":\"22/07/1990\",\r\n\"gender\":\"Male\",\r\n\"password\":\"1234\",\r\n\"occupation\":\"Driver\",\r\n\"permanentAddress\":\"767668\", \r\n\"currentAddress\":\"10-60400\",  \r\n\"mobileNumber\":\"+254792526374\",\r\n\"email\":\"JamesOtieno@gmail.com\",\r\n\"pinCode\":\"5776\", \r\n\"city\":\"Mombasa\",  \r\n\"state\":\"Mwambao\", \r\n\"country\":\"Kenya\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"mobileNumber\":\"+254 112016790\",\r\n\"password\":\"332\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestOtp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"phoneNumber\":\"+254 112 016790\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/otp/send",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"otp",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VerifyOTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"phoneNumber\":\"+254 112 016790\",\r\n\"otp\":\"8259\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://6c5d-41-90-101-26.in.ngrok.io/otp/verify",
+					"protocol": "http",
+					"host": [
+						"6c5d-41-90-101-26",
+						"in",
+						"ngrok",
+						"io"
+					],
+					"path": [
+						"otp",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CheckBalance",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\":\"+254792526384\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/account-balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"account-balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deposit",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\":\"+254792526384\",\r\n    \"transactionAmount\":\"150\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/deposit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendMoney",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"senderAccountNumber\":\"+254792526374\",\r\n   \"receiverAccountNumber\":\"+254792526384\", \r\n   \"transactionAmount\":\"150\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/send-money",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"send-money"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Withdraw",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\":\"+254792526384\",\r\n    \"transactionAmount\":\"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/withdraw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"withdraw"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
