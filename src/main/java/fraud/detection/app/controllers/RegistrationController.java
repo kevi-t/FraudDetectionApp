@@ -27,7 +27,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register( @Valid @RequestBody  RegisterDTO request)
+    public ResponseEntity<?> register( @Valid @RequestBody RegisterDTO request)
     {
         try{
             return ResponseEntity.ok(registrationService.register(request));

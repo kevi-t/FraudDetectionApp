@@ -22,12 +22,16 @@ public class CheckBalanceService {
 
     public UniversalResponse checkBalance(CheckBalanceDTO request){
         try{
-            Account accountNumber = accountRepository.findByAccountNumber(request.getAccountNumber());
+            Account accountNumber = accountRepository.findByaccountNo(request.getAccountNumber());
             if (accountNumber == null) {
                 return UniversalResponse.builder().message("Account not found, Please Create new Account").build();
             }
             else{
+<<<<<<<< HEAD:src/main/java/fraud/detection/app/services/CheckBalanceService.java
                 return  UniversalResponse.builder().message("Balance Request Successful |Account Balance:"+accountNumber.getAccountBalance()).build();
+========
+                return  UniversalResponse.builder().message("Balance Request Successful").balance(accountNumber.getBalance()).build();
+>>>>>>>> 03a091269796c0ab07bf0a37fc5a96c0b396c65f:src/main/java/fraud/detection/app/services/AccountService.java
             }
         }
         catch (Exception e){
