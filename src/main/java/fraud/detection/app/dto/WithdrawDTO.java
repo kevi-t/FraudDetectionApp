@@ -20,4 +20,5 @@ public class WithdrawDTO {
     @NotNull
     @DecimalMin(value = "20",message ="The minimum withdraw amount is 20" )
     private double transactionAmount;
+    private String pin;
 }

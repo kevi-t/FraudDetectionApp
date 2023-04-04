@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @Builder
 @AllArgsConstructor
 public class SendMoneyDTO {
+
     @NotEmpty(message = "This field 'senderAccountNumber' should not be empty") //Sender
     private String senderAccountNumber;
     @NotEmpty(message = "This field 'receiverAccountNumber' should not be empty")
@@ -22,5 +23,6 @@ public class SendMoneyDTO {
     @NotNull
     @DecimalMin(value = "1",message ="Invalid amount please try again" )
     private double transactionAmount;
+    private String pin;
 
 }

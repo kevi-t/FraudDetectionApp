@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+
 @Validated
 @Data
 @NoArgsConstructor
@@ -14,8 +15,8 @@ import org.springframework.validation.annotation.Validated;
 public class RegisterDTO {
 
     private Integer otp;
-    @NotEmpty(message = "This field 'Password' should not be empty")
-    private String password;
+    @NotEmpty(message = "This field 'Pin' should not be empty")
+    private String pin;
     @NotEmpty(message = "This field 'firstName' should not be empty")
     private String firstName;
     @NotEmpty(message = "This field 'middleName' should not be empty")

@@ -30,12 +30,30 @@ public class RegistrationService {
             }
             else if(userRepository.findUserByMobileNumber(phone)==null) {
 
-                var user = User.builder().firstName(request.getFirstName()).middleName(request.getMiddleName()).lastName(request.getLastName()).email(request.getEmail()).mobileNumber(request.getMobileNumber())
-                        .password(passwordEncoder.encode(request.getPassword())).gender(request.getGender()).dateOfBirth(request.getDateOfBirth()).occupation(request.getOccupation()).country(request.getCountry())
-                        .city(request.getCity()).state(request.getState()).currentAddress(request.getCurrentAddress()).permanentAddress(request.getPermanentAddress()).pinCode(request.getPinCode()).build();
+                var user = User.builder()
+                        .firstName(request.getFirstName())
+                        .middleName(request.getMiddleName())
+                        .lastName(request.getLastName())
+                        .email(request.getEmail())
+                        .mobileNumber(request.getMobileNumber())
+                        .pin(passwordEncoder.encode(request.getPin()))
+                        .gender(request.getGender())
+                        .dateOfBirth(request.getDateOfBirth())
+                        .occupation(request.getOccupation())
+                        .country(request.getCountry())
+                        .city(request.getCity())
+                        .state(request.getState())
+                        .currentAddress(request.getCurrentAddress())
+                        .permanentAddress(request.getPermanentAddress())
+                        .pinCode(request.getPinCode()).build();
                 try {
                     userRepository.save(user);
-                    var account = Account.builder().accountNumber(user.getMobileNumber()).accountBalance(0.55).build();//.user(user)
+                    var account = Account.builder()
+                            .accountNumber(user.getMobileNumber())
+                            .openedBy(user.getMobileNumber())
+                            .accountBalance(0.55)
+                            .balanceBefore(0.01)
+                            .build();//.user(user)
                     accountRepository.save(account);
                     return  UniversalResponse.builder().message("User Registered Successfully").status(0).build();
                 }

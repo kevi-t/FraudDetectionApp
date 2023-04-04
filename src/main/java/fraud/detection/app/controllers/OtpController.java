@@ -43,15 +43,14 @@ public class OtpController {
     public Object sendOtp(@RequestBody SendOtpDTO request) {
         System.out.println(request);
         try{
-            if (validationService.isValidPhoneNumber(request.getPhoneNumber())==true)
+            if (validationService.validateKenyanPhoneNumber(request.getPhoneNumber())==true)
             {
                 try {
 
                     Random random = new Random();
                     int otp = random.nextInt(9000) + 1000;
                     //SmsRequest smsRequest = new SmsRequest(phoneNumber.toString(),otp);
-                    SmsRequest smsOBj = new SmsRequest();
-                    var smsRequest=smsOBj.builder().phoneNumber(request.getPhoneNumber()).message(otp).build();
+                    var smsRequest= SmsRequest.builder().phoneNumber(request.getPhoneNumber()).message(otp).build();
                     System.out.println(smsRequest);
                     //System.out.println(Expiry);
                     try{

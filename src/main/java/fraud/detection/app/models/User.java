@@ -39,7 +39,7 @@ public class User implements UserDetails {
     @NotNull(message = "This field 'model' should not be empty")
     private String occupation;
     @NotNull(message = "This field 'model' should not be empty")
-    private String password;
+    private String pin;
 
     //Contact Information
     @NotNull(message = "This field 'model' should not be empty")
@@ -59,9 +59,11 @@ public class User implements UserDetails {
     private String state;
     @NotNull(message = "This field 'model' should not be empty")
     private String country;
-
     @CreationTimestamp
     private LocalDateTime created_at;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private  Account account;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -70,7 +72,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return pin;
     }
 
     @Override

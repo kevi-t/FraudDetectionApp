@@ -1,4 +1,4 @@
-package fraud.detection.app;
+package fraud.detection.app.utils;
 
 import fraud.detection.app.configurations.TwilioInitializer;
 import org.slf4j.Logger;

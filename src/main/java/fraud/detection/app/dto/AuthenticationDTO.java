@@ -15,5 +15,5 @@ public class AuthenticationDTO {
     @NotEmpty(message = "This field 'mobileNumber' should not be empty")
     private  String mobileNumber;
     @NotEmpty(message = "This field 'Password' should not be empty")
-    private String password;
+    private String pin;
 }

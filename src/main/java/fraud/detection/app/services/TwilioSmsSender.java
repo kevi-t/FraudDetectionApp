@@ -2,7 +2,7 @@ package fraud.detection.app.services;
 
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-import fraud.detection.app.configurations.TwilioConfig;
+import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.SmsRequest;
 import fraud.detection.app.models.Otp;
 import fraud.detection.app.repositories.OtpRepository;
@@ -17,11 +17,11 @@ import java.time.LocalDateTime;
 public class TwilioSmsSender  {
 
     private final OtpRepository otpRepository;
-    private final TwilioConfig twilioConfig;
+    private final TwilioConfiguration twilioConfig;
     private final static Logger LOGGER= LoggerFactory.getLogger(TwilioSmsSender.class);
 
     @Autowired
-    public TwilioSmsSender(OtpRepository otpRepository, TwilioConfig twilioConfig) {
+    public TwilioSmsSender(OtpRepository otpRepository, TwilioConfiguration twilioConfig) {
         super();
         this.otpRepository = otpRepository;
         this.twilioConfig = twilioConfig;

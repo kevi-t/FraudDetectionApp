@@ -28,11 +28,11 @@ public class AuthenticateService {
 
     public UniversalResponse login(AuthenticationDTO request) {
         try {
-             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPassword()));
+             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPin()));
              SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (Exception ex){
-            return UniversalResponse.builder().message("Username or Password incorrect").build();
+            return UniversalResponse.builder().message("Username or Pin incorrect").build();
         }
         try {
             User user = userRepository.findUserByMobileNumber(request.getMobileNumber());
@@ -43,7 +43,7 @@ public class AuthenticateService {
                 try{
                     String jwt = jwtTokenUtil.createToken(request.getMobileNumber());
                     Account accountNumber = accountRepository.findByAccountNumber(request.getMobileNumber());
-                    return  UniversalResponse.builder().message("Login Successful").balance(accountNumber.getAccountBalance()).data(jwt).build();
+                    return  UniversalResponse.builder().message("Login Successful").data(jwt).build();
                 }
                 catch (Exception ex){
                     System.out.println("Token failure");

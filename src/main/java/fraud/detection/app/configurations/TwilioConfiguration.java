@@ -3,14 +3,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties
-public class TwilioConfig {
+@ConfigurationProperties(prefix = "app")
+public class TwilioConfiguration {
 
     private String twilioAccountSid;
     private String trial_number;
     private String twilioAuthToken;
 
-    public TwilioConfig(){
+    public TwilioConfiguration(){
 
     }
 

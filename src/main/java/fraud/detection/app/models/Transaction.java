@@ -1,9 +1,6 @@
 package fraud.detection.app.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,12 +18,15 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long transactionId;
-    private String accountNumber;
-    private String terminalId;
+    private String senderAccount;
+    private String receiverAccount;
     private String transactionType;
     private double transactionAmount;
-    private int transactionFraud;
-    private int transactionFraudScenario;
+    private String Status;
+    private String Debited;
+    private String Credited;
+    private String ReferenceCode;
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime transactionDate;
 }
