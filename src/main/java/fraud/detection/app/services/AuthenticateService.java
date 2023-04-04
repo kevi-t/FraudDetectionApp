@@ -42,8 +42,8 @@ public class AuthenticateService {
             else {
                 try{
                     String jwt = jwtTokenUtil.createToken(request.getMobileNumber());
-                    Account accountNumber = accountRepository.findByAccountNumber(request.getMobileNumber());
-                    return  UniversalResponse.builder().message("Login Successful").balance(accountNumber.getAccountBalance()).data(jwt).build();
+                    Account accountNumber = accountRepository.findByaccountNo(request.getMobileNumber());
+                    return  UniversalResponse.builder().message("Login Successful").balance(accountNumber.getBalance()).data(jwt).build();
                 }
                 catch (Exception ex){
                     System.out.println("Token failure");

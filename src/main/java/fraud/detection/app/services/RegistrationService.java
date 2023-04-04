@@ -3,7 +3,6 @@ package fraud.detection.app.services;
 import fraud.detection.app.dto.RegisterDTO;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
-import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,43 +13,71 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+
 public class RegistrationService {
-
     private  final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AccountRepository accountRepository;
+   // private  final AccountRepository accountRepository;
+private final PasswordEncoder passwordEncoder;
     public UniversalResponse response;
-
-    public UniversalResponse register(RegisterDTO  request) {
-
+    public UniversalResponse register(RegisterDTO request) {
         String phone=request.getMobileNumber();
-        try{
-            if (userRepository.findUserByEmail(request.getEmail())!=null){
-                return  UniversalResponse.builder().message("User with this email Already Exist").status(0).build();
-            }
-            else if(userRepository.findUserByMobileNumber(phone)==null) {
+        String Email= request.getEmail();
+        //TODO check if the email also exists
+try{
+    if (userRepository.findUserByMobileNumber(phone)==null) {
+                            User userObj = new User();
+                    var user = userObj.builder()
+                            .city(request.getCity()).
+                            country(request.getCountry())
+                            .currentAddress(request.getCurrentAddress())
+                            .dateOfBirth(request.getDateOfBirth())
+                            .email(request.getEmail())
+                            .firstName(request.getFirstName())
+                            .gender(request.getGender())
+                            .lastName(request.getLastName())
+                            .mobileNumber(request.getMobileNumber())
+                            .state(request.getState()).
+                            middleName(request.getMiddleName())
+                            .occupation(request.getOccupation())
+                            .permanentAddress(request.getPermanentAddress())
+                            .pinCode(request.getPinCode())
+                            .pin(passwordEncoder.encode(request.getPin()))
+                            .build();
+                    Account AccObj=new Account();
+                    var account=AccObj.builder().balance(2000.000)
+                            .balanceBefore(0.000)
+                            .openedBy(request.getMobileNumber())
+                            .user(user)
+                            .build();
+                    user.setAccount(account);
+                    try {
+                        //accountRepository.save(account);
+                        userRepository.save(user);
+                        UniversalResponse response= UniversalResponse.builder()
+                                .message("User saved Successfully")
+                                .status(0)
+                                .build();
+                        return  response;
+                    }catch (Exception ex){
 
-                var user = User.builder().firstName(request.getFirstName()).middleName(request.getMiddleName()).lastName(request.getLastName()).email(request.getEmail()).mobileNumber(request.getMobileNumber())
-                        .password(passwordEncoder.encode(request.getPassword())).gender(request.getGender()).dateOfBirth(request.getDateOfBirth()).occupation(request.getOccupation()).country(request.getCountry())
-                        .city(request.getCity()).state(request.getState()).currentAddress(request.getCurrentAddress()).permanentAddress(request.getPermanentAddress()).pinCode(request.getPinCode()).build();
-                try {
-                    userRepository.save(user);
-                    var account = Account.builder().accountNumber(user.getMobileNumber()).accountBalance(0.55).build();//.user(user)
-                    accountRepository.save(account);
-                    return  UniversalResponse.builder().message("User Registered Successfully").status(0).build();
+                        System.out.println("Saving user failed{}" + ex);
+                    }
+
                 }
-                catch (Exception ex){
-                    System.out.println("Registration failed{}" + ex);
-                }
+               else {
+
+                UniversalResponse response= UniversalResponse.builder()
+                        .message("User Already Registered, Please Login")
+                        .status(0)
+                        .build();
+
+                return  response;
             }
-            else {
-                return   UniversalResponse.builder().message("User Already Registered, Please Login").status(0).build();
-            }
-        }
-        catch (Exception ex){
-            System.out.println("Saving User Failed{}"+ex);
-            //TODO: Save method to be a boolean,if fails to save send error
-        }
-        return  response;
-    }
+
 }
+        catch (Exception ex){
+           System.out.println("Saving User Failedd{}"+ex);
+//TODO: Save method to be a bolean,if fails to save send error
+        }
+        return  response;}
+    }

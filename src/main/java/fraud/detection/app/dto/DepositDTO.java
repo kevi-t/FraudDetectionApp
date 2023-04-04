@@ -19,5 +19,5 @@ public class DepositDTO {
     private String accountNumber;
     @NotNull
     @DecimalMin(value = "50",message ="The minimum deposit amount is 50" )
-    private Double transactionAmount;
+    private float transactionAmount;
 }

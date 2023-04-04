@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AccountService {
+public class CheckBalanceService {
 
     private  final AccountRepository accountRepository;
     public  UniversalResponse response;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository) {
+    public CheckBalanceService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
@@ -27,7 +27,7 @@ public class AccountService {
                 return UniversalResponse.builder().message("Account not found, Please Create new Account").build();
             }
             else{
-                return  UniversalResponse.builder().message("Balance Request Successful").balance(accountNumber.getBalance()).build();
+                return  UniversalResponse.builder().message("Balance Request Successful |Account Balance:"+accountNumber.getBalance()).build();
             }
         }
         catch (Exception e){
