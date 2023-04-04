@@ -27,7 +27,8 @@ public class CheckBalanceService {
                 return UniversalResponse.builder().message("Account not found, Please Create new Account").build();
             }
             else{
-                return  UniversalResponse.builder().message("Balance Request Successful |Account Balance:"+accountNumber.getBalance()).build();
+                return  UniversalResponse.builder().message("Balance Request Successful |Account Balance:"+accountNumber
+                        .getBalance()).build();
             }
         }
         catch (Exception e){

@@ -40,14 +40,12 @@ public class DepositService {
                 accountNumber2.setBalance(newAccountBalance);
                 accountRepository.save(accountNumber2);
 
-                Transaction transaction = Transaction.builder().
-                        sender(request.getAccountNumber()).
-                        receiver(request.getAccountNumber()).
-                        AMOUNT(request.getTransactionAmount()).Transaction_Type("DEPOSIT").build();
+                Transaction transaction = Transaction.builder().sender(request.getAccountNumber()).
+                        receiver(request.getAccountNumber()).AMOUNT(request.getTransactionAmount()).
+                        Transaction_Type("DEPOSIT").build();
                 transactionRepository.save(transaction);
 
-                return  UniversalResponse.builder()
-                        .message("Deposit Request Successful New Account Balance: "+ accountNumber2.getBalance()).build();
+                return  UniversalResponse.builder().message("Deposit Request Successful New Account Balance: "+ accountNumber2.getBalance()).build();
             }
         }
         catch (Exception e){

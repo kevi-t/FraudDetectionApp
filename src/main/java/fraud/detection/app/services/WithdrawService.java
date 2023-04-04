@@ -45,15 +45,14 @@ public class WithdrawService {
                     double newAccountBalance = (currentBalance-inputAmount);
                     accountNumber2.setBalance(newAccountBalance);
                     accountRepository.save(accountNumber2);
-//TODO:Add transaction code
-                    Transaction transaction = Transaction.builder().sender(request
-                            .getAccountNumber()).receiver(request.getAccountNumber())
-                            .AMOUNT((float) request.getTransactionAmount())
-                            .Transaction_Type("WITHDRAW").build();
+
+                    Transaction transaction = Transaction.builder().sender(request.getAccountNumber())
+                            .receiver(request.getAccountNumber()).AMOUNT((float) request
+                            .getTransactionAmount()).Transaction_Type("WITHDRAW").build();
                     transactionRepository.save(transaction);
                 }
-                return  UniversalResponse.builder()
-                        .message("Withdraw Request Successful Account Balance: "+accountNumber2.getBalance()).build();
+                return  UniversalResponse.builder().message("Withdraw Request Successful Account Balance: "+accountNumber2.
+                        getBalance()).build();
             }
         }
         catch (Exception e){
