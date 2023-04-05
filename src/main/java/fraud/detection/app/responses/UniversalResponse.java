@@ -13,6 +13,7 @@ public class UniversalResponse implements Serializable {
 
     private int status;
     private String message;
+    private double balance;
     private String data;
     //TODO: implement how to display data to the client
 }

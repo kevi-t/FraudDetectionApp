@@ -12,9 +12,8 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class CheckBalanceDTO {
+public class AccountDTO {
 
     @NotEmpty(message = "This field 'accountNumber' should not be empty")
     private String accountNumber;
-    private String pin;
 }

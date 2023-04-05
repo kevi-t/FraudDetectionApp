@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 public class TwilioInitializer {
 
     private final static Logger LOGGER= LoggerFactory.getLogger(TwilioInitializer.class);
-    private final TwilioConfiguration twilioConfig;
+    private final TwilioConfig twilioConfig;
 
     @Autowired
-    public TwilioInitializer(TwilioConfiguration twilioConfig) {
+    public TwilioInitializer(TwilioConfig twilioConfig) {
         this.twilioConfig = twilioConfig;
         Twilio.init(twilioConfig.getTwilioAccountSid(),twilioConfig.getTwilioAuthToken());
         LOGGER.info("twilio initialized....");

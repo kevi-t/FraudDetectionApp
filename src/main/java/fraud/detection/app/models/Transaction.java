@@ -1,32 +1,35 @@
 package fraud.detection.app.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name="Transactions")
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long transactionId;
-    private String senderAccount;
-    private String receiverAccount;
-    private String transactionType;
-    private double transactionAmount;
+    private int TransactionID;
+    private String receiver;
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    private float AMOUNT;
+    private String Transaction_Type;
     private String Status;
     private String Debited;
     private String Credited;
     private String ReferenceCode;
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime transactionDate;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "Account_No", referencedColumnName = "accountNo")
+   // private Account account;
+    private String sender;
+
 }

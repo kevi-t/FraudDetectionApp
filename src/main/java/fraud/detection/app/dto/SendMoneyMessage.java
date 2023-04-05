@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class SendMoneyMessage {
-
-    private  String receiverPhoneNumber;//destination phone number
-    private  String senderPhoneNumber;
+    private  String TophoneNumber;//destination phone number
+    private  String FromphoneNumber;
     private  double message;
 }
