@@ -2,15 +2,11 @@ package fraud.detection.app.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fraud.detection.app.configurations.MpesaConfiguration;
-import fraud.detection.app.dto.AccessTokenResponse;
-import fraud.detection.app.dto.RegisterUrlRequest;
-import fraud.detection.app.dto.RegisterUrlResponse;
+import fraud.detection.app.dto.*;
+import fraud.detection.app.utils.Constants;
 import fraud.detection.app.utils.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -62,7 +58,7 @@ public class DarajaApiImpl  implements DarajaApi{
     }
 
     @Override
-    public RegisterUrlResponse registerUrl() {
+    public AccessTokenResponse registerUrl() throws IOException {
         AccessTokenResponse accessTokenResponse = getAccessToken();
 
         RegisterUrlRequest registerUrlRequest = new RegisterUrlRequest();
@@ -71,52 +67,87 @@ public class DarajaApiImpl  implements DarajaApi{
         registerUrlRequest.setShortCode(mpesaConfiguration.getShortCode());
         registerUrlRequest.setValidationURL(mpesaConfiguration.getValidationUrl());
 
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json"), "{\"BusinessShortCode\": 174379, " +
+                "\"Password\": \"MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjMwNDExMTExNDI4\", " +
+                "\"Timestamp\": \"20230411111428\", " +
+                "\"TransactionType\": " +
+                "\"CustomerPayBillOnline\", " +
+                "\"Amount\": 1, "                                                                                                                                                                                                                                                                            +
+                "\"PartyA\": 254711694281, " +
+                "\"PartyB\": 174379, " +
+                "\"PhoneNumber\": 254711694281, " +
+                "\"CallBackURL\": \"https://mydomain.com/path\", " +
+                "\"AccountReference\": " +
+                "\"CompanyXLTD\", " +
+                "\"TransactionDesc\": " +
+                "\"Payment of X\"}");
+        Request request = new Request.Builder()
+
+                .url("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest")
+
+                .method("POST", body)
+
+                .addHeader("Content-Type", "application/json")
+
+                .addHeader("Authorization", "Bearer"+accessTokenResponse.getAccessToken())
+
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            assert response.body() != null;
+
+            // use Jackson to Decode the ResponseBody ...
+            return objectMapper.readValue(response.body().string(), AccessTokenResponse.class);
+        } catch (IOException e) {
+            log.error(String.format("Could not get access token. -> %s", e.getLocalizedMessage()));
+            return null;
+        }
+    }
+
+    @Override
+    public StkPushSyncResponse performStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
+        ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
+        externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
+
+        String transactionTimestamp = HelperUtility.getTransactionTimestamp();
+        String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),
+                mpesaConfiguration.getStkPassKey(), transactionTimestamp);
+
+        externalStkPushRequest.setPassword(stkPushPassword);
+        externalStkPushRequest.setTimestamp(transactionTimestamp);
+        externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
+        externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
+        externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
+        externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
+        externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
+        externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
+        externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
+        externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
+
+        AccessTokenResponse accessTokenResponse = getAccessToken();
 
         RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
-                Objects.requireNonNull(HelperUtility.toJson(registerUrlRequest)));
+                Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
 
         Request request = new Request.Builder()
-                .url(mpesaConfiguration.getRegisterUrlEndpoint())
+                .url(mpesaConfiguration.getStkPushRequestUrl())
                 .post(body)
-                .addHeader("Authorization","Bearer"+accessTokenResponse.getAccessToken())
+                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
                 .build();
+
 
         try {
             Response response = okHttpClient.newCall(request).execute();
-
             assert response.body() != null;
             // use Jackson to Decode the ResponseBody ...
-            return objectMapper.readValue(response.body().string(), RegisterUrlResponse.class);
 
+            return objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
         } catch (IOException e) {
-            log.error(String.format("Could not register url -> %s", e.getLocalizedMessage()));
+            log.error(String.format("Could not perform the STK push request -> %s", e.getLocalizedMessage()));
             return null;
         }
 
     }
 
-//    @Override
-//    public SimulateTransactionResponse simulateC2BTransaction(SimulateTransactionRequest simulateTransactionRequest) {
-//        AccessTokenResponse accessTokenResponse = getAccessToken();
-//        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
-//                Objects.requireNonNull(HelperUtility.toJson(simulateTransactionRequest)));
-//
-//        Request request = new Request.Builder()
-//                .url(mpesaConfiguration.getSimulateTransactionEndpoint())
-//                .post(body)
-//                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
-//                .build();
-//
-//        try {
-//            Response response = okHttpClient.newCall(request).execute();
-//            assert response.body() != null;
-//            // use Jackson to Decode the ResponseBody ...
-//
-//            return objectMapper.readValue(response.body().string(), SimulateTransactionResponse.class);
-//        } catch (IOException e) {
-//            log.error(String.format("Could not simulate C2B transaction -> %s", e.getLocalizedMessage()));
-//            return null;
-//        }
-//
-//    }
 }

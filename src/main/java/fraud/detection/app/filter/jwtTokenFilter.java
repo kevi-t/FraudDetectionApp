@@ -41,7 +41,7 @@ public class jwtTokenFilter extends OncePerRequestFilter  {
         else if (request.getServletPath().equals("/otp/verify")){
             filterChain.doFilter(request, response);
         }
-        else if (request.getServletPath().equals("/mobile-money/register-url")){
+        else if (request.getServletPath().equals("/mobile-money/stk-transaction-request")){
             filterChain.doFilter(request, response);
         }
 

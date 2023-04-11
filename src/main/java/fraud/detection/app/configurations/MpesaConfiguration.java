@@ -17,6 +17,10 @@ import org.springframework.context.annotation.Configuration;
         private String confirmationUrl;
         private String validationUrl;
         private String registerUrlEndpoint;
+        private String stkPassKey;
+        private String stkPushShortCode;
+        private String stkPushRequestUrl;
+        private String stkPushRequestCallbackUrl;
         @Override
         public String toString() {
             return String.format("{consumerKey='%s', consumerSecret='%s', grantType='%s', oauthEndpoint='%s'}",
