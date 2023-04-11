@@ -62,8 +62,8 @@ public class User implements UserDetails {
     @CreationTimestamp
     private LocalDateTime created_at;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private  Account account;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private  Account account;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

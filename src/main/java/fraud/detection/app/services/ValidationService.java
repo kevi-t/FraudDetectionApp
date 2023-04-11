@@ -2,8 +2,6 @@ package fraud.detection.app.services;
 
 import org.springframework.stereotype.Service;
 
-import java.util.regex.Pattern;
-
 @Service
 public class ValidationService {
 

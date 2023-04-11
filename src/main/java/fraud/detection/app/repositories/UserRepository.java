@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Transactional
 public interface UserRepository extends JpaRepository<User,Long> {
-   User  findUserByMobileNumber(String mobileNumber);
+   User  findUserBymobileNumber(String mobileNumber);
    User findUserByEmail(String email);
 }

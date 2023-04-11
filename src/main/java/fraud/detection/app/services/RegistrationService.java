@@ -27,7 +27,7 @@ public class RegistrationService {
         try {
             if (userRepository.findUserByEmail(request.getEmail()) != null) {
                 return UniversalResponse.builder().message("User with this email Already Exist").status(0).build();
-            } else if (userRepository.findUserByMobileNumber(phone) == null) {
+            } else if (userRepository.findUserBymobileNumber(phone) == null) {
 
                 var user = User.builder()
                         .firstName(request.getFirstName())
@@ -48,7 +48,7 @@ public class RegistrationService {
                 try {
                     userRepository.save(user);
                     var account = Account.builder()
-                            .accountNumber(user.getMobileNumber())
+                            .accountNumber(request.getMobileNumber())
                             .openedBy(user.getMobileNumber())
                             .accountBalance(0.55)
                             .balanceBefore(0.01)

@@ -36,7 +36,7 @@ public class AuthenticateService {
             return UniversalResponse.builder().message("Username or Pin incorrect").build();
         }
         try {
-            User user = userRepository.findUserByMobileNumber(request.getMobileNumber());
+            User user = userRepository.findUserBymobileNumber(request.getMobileNumber());
             if (user == null) {
                 return UniversalResponse.builder().message("User not found, Please Register").build();
             }

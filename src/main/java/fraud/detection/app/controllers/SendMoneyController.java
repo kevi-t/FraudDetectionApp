@@ -25,12 +25,16 @@ public class SendMoneyController {
         this.sendMoneyService = sendMoneyService;
     }
 
-    @PostMapping("/send-money")
+    @PostMapping("/sendmoney")
     public ResponseEntity<?> sendMoney(@Valid @RequestBody SendMoneyDTO request) {
+       // System.out.println(request.getReceiverAccountNumber());
         try{
+            //System.out.println(request.getReceiverAccountNumber());
+
             return ResponseEntity.ok(sendMoneyService.sendMoney(request));
         }
         catch (Exception ex){
+            System.out.println("ERROR"+ex);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
