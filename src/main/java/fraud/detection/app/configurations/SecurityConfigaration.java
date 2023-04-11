@@ -1,10 +1,12 @@
 package fraud.detection.app.configurations;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fraud.detection.app.filter.jwtTokenFilter;
 import fraud.detection.app.services.UserDetailsService;
 import fraud.detection.app.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,7 +46,7 @@ public class SecurityConfigaration {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests().requestMatchers
-                        ("/fraud/app/register","/fraud/app/login","/otp/send","/otp/verify").permitAll()
+                        ("/fraud/app/register","/fraud/app/login","/otp/send","/otp/verify","/mobile-money/register-url","/mobile-money/token").permitAll()
                 .and()
                 .authorizeHttpRequests().requestMatchers
                         ("/api/auth//getusers").hasAuthority("Admin")
@@ -57,5 +59,20 @@ public class SecurityConfigaration {
     public PasswordEncoder passwordEncoderD() {
         return new BCryptPasswordEncoder(); //return if converted to shaa
     }
+    @Bean
+    public OkHttpClient getOkHttpClient() {
+        return new OkHttpClient();
+    }
 
+    @Bean
+    public ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
+    }
+
+//    @Bean
+//    public AcknowledgeResponse getAcknowledgeResponse() {
+//        AcknowledgeResponse acknowledgeResponse = new AcknowledgeResponse();
+//        acknowledgeResponse.setMessage("Success");
+//        return acknowledgeResponse;
+//    }
 }

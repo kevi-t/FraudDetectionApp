@@ -41,6 +41,14 @@ public class jwtTokenFilter extends OncePerRequestFilter  {
         else if (request.getServletPath().equals("/otp/verify")){
             filterChain.doFilter(request, response);
         }
+        else if (request.getServletPath().equals("/mobile-money/register-url")){
+            filterChain.doFilter(request, response);
+        }
+
+        else if (request.getServletPath().equals("/mobile-money/token")){
+        filterChain.doFilter(request, response);
+    }
+
         else {
            // UniversalResponse universalResponse;
             String authorizationHeader = request.getHeader("Authorization");
