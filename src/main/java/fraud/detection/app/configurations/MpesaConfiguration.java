@@ -1,7 +1,9 @@
 package fraud.detection.app.configurations;
+    import fraud.detection.app.dto.AcknowledgeResponse;
     import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
 
     @Data
     @Configuration
@@ -25,5 +27,12 @@ import org.springframework.context.annotation.Configuration;
         public String toString() {
             return String.format("{consumerKey='%s', consumerSecret='%s', grantType='%s', oauthEndpoint='%s'}",
                     consumerKey, consumerSecret, grantType, oauthEndpoint);
+        }
+
+        @Bean
+        public AcknowledgeResponse getAcknowledgeResponse() {
+            AcknowledgeResponse acknowledgeResponse = new AcknowledgeResponse();
+            acknowledgeResponse.setMessage("Success");
+            return acknowledgeResponse;
         }
 }

@@ -18,9 +18,6 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long transactionId;
-    private String senderAccount;
-    private String businessNo;
-    private String receiverAccount;
     private String transactionType;
     private double transactionAmount;
     private String Status;

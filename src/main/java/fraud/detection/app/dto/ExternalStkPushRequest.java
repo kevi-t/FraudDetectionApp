@@ -10,7 +10,7 @@ public class ExternalStkPushRequest {
     private String transactionType;
 
     @JsonProperty("Amount")
-    private String amount;
+    private double amount;
 
     @JsonProperty("CallBackURL")
     private String callBackURL;

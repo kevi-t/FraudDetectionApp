@@ -1,12 +1,18 @@
 package fraud.detection.app.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.twilio.rest.api.v2010.account.Message;
 import fraud.detection.app.configurations.MpesaConfiguration;
 import fraud.detection.app.dto.*;
+import fraud.detection.app.models.Account;
+import fraud.detection.app.models.Transaction;
+import fraud.detection.app.repositories.AccountRepository;
+import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.utils.Constants;
 import fraud.detection.app.utils.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import com.twilio.type.PhoneNumber;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,11 +26,24 @@ public class DarajaApiImpl  implements DarajaApi{
     private final MpesaConfiguration mpesaConfiguration;
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
+    private final TransactionRepository transactionRepository;
+    private final HelperUtility helperUtility;
+    public StkPushSyncResponse stkPushSyncResponse;
+    private final AccountRepository accountRepository;
+    double UpdatedAccountBalance;
 
-    public DarajaApiImpl(MpesaConfiguration mpesaConfiguration, OkHttpClient okHttpClient, ObjectMapper objectMapper) {
+    public DarajaApiImpl(MpesaConfiguration mpesaConfiguration, OkHttpClient okHttpClient
+            , ObjectMapper objectMapper
+            , TransactionRepository transactionRepository, HelperUtility helperUtility
+            , StkPushSyncResponse stkPushSyncResponse
+            , AccountRepository accountRepository) {
         this.mpesaConfiguration = mpesaConfiguration;
         this.okHttpClient = okHttpClient;
         this.objectMapper = objectMapper;
+        this.transactionRepository = transactionRepository;
+        this.helperUtility = helperUtility;
+        this.stkPushSyncResponse = stkPushSyncResponse;
+        this.accountRepository = accountRepository;
     }
 
 
@@ -107,47 +126,80 @@ public class DarajaApiImpl  implements DarajaApi{
 
     @Override
     public StkPushSyncResponse performStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
-        ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
-        externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
+        String ExtenalPin = internalStkPushRequest.getPin();
+        String Accountno = internalStkPushRequest.getPhoneNumber();
+        if (helperUtility.checkPin(ExtenalPin, Accountno)) {
 
-        String transactionTimestamp = HelperUtility.getTransactionTimestamp();
-        String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),
-                mpesaConfiguration.getStkPassKey(), transactionTimestamp);
+//    ToDo: Send A message to the user telling them they entered the wrong pin
+            try {
+                Message twilioMessage = Message.creator(
+                                new PhoneNumber("+254 112 016790"),
+                                new PhoneNumber(internalStkPushRequest.getPhoneNumber()),
+                                "You entered the wrong Pin")
+                        .create();
+            } catch (Exception e) {
 
-        externalStkPushRequest.setPassword(stkPushPassword);
-        externalStkPushRequest.setTimestamp(transactionTimestamp);
-        externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
-        externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
-        externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
-        externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
-        externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
-        externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
-        externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
-        externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
+                log.error(String.format("Could not perform sending messages request -> %s"
+                        , e.getLocalizedMessage()));
 
-        AccessTokenResponse accessTokenResponse = getAccessToken();
+            }}else{
+                ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
+                externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
 
-        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
-                Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
+                String transactionTimestamp = HelperUtility.getTransactionTimestamp();
+                String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),
+                        mpesaConfiguration.getStkPassKey(), transactionTimestamp);
+                externalStkPushRequest.setPassword(stkPushPassword);
+                externalStkPushRequest.setTimestamp(transactionTimestamp);
+                externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
+                externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
+                externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
+                externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
+                externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
+                externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
+                externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
+                externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
+                //Inserting transaction in transaction table
+                Transaction TransObj = new Transaction();
+                var trans = TransObj.builder()
+                        .transactionAmount(internalStkPushRequest.getAmount())
+                        .transactionType("Deposit")
+                        .ReferenceCode(HelperUtility.getTransactionUniqueNumber())
+                        .Debited(internalStkPushRequest.getPhoneNumber())
+                        .Credited(internalStkPushRequest.getPhoneNumber())
+                        .Status("0")
+                        .build();
+                transactionRepository.save(trans);
+                // Updating Accounts table
+                Account mtransactionAccount = accountRepository.findByAccountNumber(internalStkPushRequest.getPhoneNumber());
+                double currentAccountbBalance = mtransactionAccount.getAccountBalance();
+                UpdatedAccountBalance = currentAccountbBalance + internalStkPushRequest.getAmount();
+                AccessTokenResponse accessTokenResponse = getAccessToken();
+                mtransactionAccount.setAccountBalance(UpdatedAccountBalance);
+                mtransactionAccount.setBalanceBefore(currentAccountbBalance);
+                accountRepository.save(mtransactionAccount);
+                RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
+                        Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
+                Request request = new Request.Builder()
+                        .url(mpesaConfiguration.getStkPushRequestUrl())
+                        .post(body)
+                        .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
+                        .build();
 
-        Request request = new Request.Builder()
-                .url(mpesaConfiguration.getStkPushRequestUrl())
-                .post(body)
-                .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
-                .build();
 
+                try {
+                    Response response = okHttpClient.newCall(request).execute();
+                    assert response.body() != null;
+                    // use Jackson to Decode the ResponseBody ...
 
-        try {
-            Response response = okHttpClient.newCall(request).execute();
-            assert response.body() != null;
-            // use Jackson to Decode the ResponseBody ...
-
-            return objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
-        } catch (IOException e) {
-            log.error(String.format("Could not perform the STK push request -> %s", e.getLocalizedMessage()));
-            return null;
+                    stkPushSyncResponse = objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
+                } catch (IOException e) {
+                    log.error(String.format("Could not perform the STK push request -> %s", e.getLocalizedMessage()));
+                    return null;
+                }
+            }
+            return stkPushSyncResponse;
         }
 
-    }
 
-}
+    }

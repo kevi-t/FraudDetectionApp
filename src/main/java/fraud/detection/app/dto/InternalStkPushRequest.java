@@ -7,9 +7,10 @@ import lombok.Data;
     public class InternalStkPushRequest{
 
         @JsonProperty("Amount")
-        private String amount;
+        private double amount;
 
         @JsonProperty("PhoneNumber")
         private String phoneNumber;
+        private String pin;
     }
 

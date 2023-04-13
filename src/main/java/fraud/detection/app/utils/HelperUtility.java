@@ -1,6 +1,9 @@
 package fraud.detection.app.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fraud.detection.app.models.User;
+import fraud.detection.app.repositories.AccountRepository;
+import fraud.detection.app.repositories.UserRepository;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 
@@ -10,8 +13,21 @@ import java.util.Base64;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 @Slf4j
+@Service
 public class HelperUtility {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
+
+    public HelperUtility(UserRepository userRepository, PasswordEncoder passwordEncoder, AccountRepository accountRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.accountRepository = accountRepository;
+    }
 
     /**
      * @param value the value to be converted to a base64 string
@@ -46,4 +62,20 @@ public class HelperUtility {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         return dateFormat.format(new Date());
     }
+
+
+
+    public Boolean checkPin(String pin,String senderaccount){
+        User user=userRepository.findUserBymobileNumber(senderaccount);
+        String dbPin= user.getPin();
+        if (passwordEncoder.matches(pin, dbPin));
+
+        return false;
+    }
+    public Boolean checkAccount(String account){
+        if(accountRepository.findByAccountNumber(account)==null);
+        return true;
+    }
 }
+
+
