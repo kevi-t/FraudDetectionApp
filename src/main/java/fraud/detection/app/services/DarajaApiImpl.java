@@ -128,7 +128,7 @@ public class DarajaApiImpl  implements DarajaApi{
     public StkPushSyncResponse performStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
         String ExtenalPin = internalStkPushRequest.getPin();
         String Accountno = internalStkPushRequest.getPhoneNumber();
-        if (helperUtility.checkPin(ExtenalPin, Accountno)) {
+        if (helperUtility.checkPin(ExtenalPin, Accountno)==true) {
 
 //    ToDo: Send A message to the user telling them they entered the wrong pin
             try {

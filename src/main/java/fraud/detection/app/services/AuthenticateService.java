@@ -29,7 +29,8 @@ public class AuthenticateService {
 
     public UniversalResponse login(AuthenticationDTO request) {
         try {
-             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPin()));
+             Authentication authentication = authenticationManager
+                     .authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPin()));
              SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (Exception ex){

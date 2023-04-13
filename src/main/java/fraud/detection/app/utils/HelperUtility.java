@@ -68,9 +68,12 @@ public class HelperUtility {
     public Boolean checkPin(String pin,String senderaccount){
         User user=userRepository.findUserBymobileNumber(senderaccount);
         String dbPin= user.getPin();
-        if (passwordEncoder.matches(pin, dbPin));
-
-        return false;
+        if (passwordEncoder.matches(pin, dbPin)){
+            return false;
+        }
+     else {
+         return true;
+        }
     }
     public Boolean checkAccount(String account){
         if(accountRepository.findByAccountNumber(account)==null);
