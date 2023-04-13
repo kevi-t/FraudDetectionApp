@@ -1,7 +1,7 @@
 package fraud.detection.app.configurations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fraud.detection.app.filter.JwtTokenFilter;
+import fraud.detection.app.filter.jwtTokenFilter;
 import fraud.detection.app.services.UserDetailsService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfigaration {
     private UserDetailsService userDetailsService;
-    JwtTokenFilter JwtTokenfileter;
+    jwtTokenFilter JwtTokenfileter;
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
