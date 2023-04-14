@@ -23,6 +23,8 @@ public class Transaction {
     private String Status;
     private String Debited;
     private String Credited;
+    private String receiverAccount;
+    private String senderAccount;
     private String ReferenceCode;
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

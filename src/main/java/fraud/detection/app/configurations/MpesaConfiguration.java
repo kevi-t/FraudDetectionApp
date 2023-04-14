@@ -1,5 +1,5 @@
 package fraud.detection.app.configurations;
-    import fraud.detection.app.dto.AcknowledgeResponse;
+    import fraud.detection.app.dto.mpesa.AcknowledgeResponse;
     import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
     import org.springframework.context.annotation.Bean;

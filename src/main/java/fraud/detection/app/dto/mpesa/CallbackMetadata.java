@@ -1,4 +1,4 @@
-package fraud.detection.app.dto;
+package fraud.detection.app.dto.mpesa;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -12,6 +12,8 @@ import java.util.Base64;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -65,19 +67,32 @@ public class HelperUtility {
 
 
 
-    public Boolean checkPin(String pin,String senderaccount){
-        User user=userRepository.findUserBymobileNumber(senderaccount);
+    public Boolean checkPin(String pin,String account){
+        User user=userRepository.findUserBymobileNumber(account);
         String dbPin= user.getPin();
         if (passwordEncoder.matches(pin, dbPin)){
-            return false;
+            return true;
         }
-     else {
-         return true;
+        else {
+            return false;
         }
     }
     public Boolean checkAccount(String account){
-        if(accountRepository.findByAccountNumber(account)==null);
-        return true;
+        if(accountRepository.findByAccountNumber(account)==null){
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    //Generating unique reference code
+    public static String referenceCodeGenerator(){
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString().toUpperCase().substring(0, 10).replaceAll("-", "A");
+        String referenceCode = "TUCN" + randomUUIDString;
+        return referenceCode;
     }
 }
 

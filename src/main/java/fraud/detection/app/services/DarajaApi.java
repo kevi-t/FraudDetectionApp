@@ -1,7 +1,7 @@
 package fraud.detection.app.services;
-import fraud.detection.app.dto.AccessTokenResponse;
-import fraud.detection.app.dto.InternalStkPushRequest;
-import fraud.detection.app.dto.StkPushSyncResponse;
+import fraud.detection.app.dto.mpesa.AccessTokenResponse;
+import fraud.detection.app.dto.mpesa.InternalStkPushRequest;
+import fraud.detection.app.dto.mpesa.StkPushSyncResponse;
 
 import java.io.IOException;
 

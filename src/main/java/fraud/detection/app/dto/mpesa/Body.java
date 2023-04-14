@@ -1,12 +1,9 @@
-package fraud.detection.app.dto;
+package fraud.detection.app.dto.mpesa;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
-    @Data
+@Data
     public class Body{
 
         @JsonProperty("stkCallback")

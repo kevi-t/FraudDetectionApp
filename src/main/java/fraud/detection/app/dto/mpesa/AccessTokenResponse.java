@@ -1,4 +1,4 @@
-package fraud.detection.app.dto;
+package fraud.detection.app.dto.mpesa;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;

@@ -3,7 +3,7 @@ package fraud.detection.app.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.rest.api.v2010.account.Message;
 import fraud.detection.app.configurations.MpesaConfiguration;
-import fraud.detection.app.dto.*;
+import fraud.detection.app.dto.mpesa.*;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
@@ -128,7 +128,7 @@ public class DarajaApiImpl  implements DarajaApi{
     public StkPushSyncResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
         String ExtenalPin = internalStkPushRequest.getPin();
         String Accountno = internalStkPushRequest.getPhoneNumber();
-        if (helperUtility.checkPin(ExtenalPin, Accountno)==true) {
+        if (helperUtility.checkPin(ExtenalPin, Accountno)==false) {
 
 //    ToDo: Send A message to the user telling them they entered the wrong pin
             try {
@@ -137,12 +137,14 @@ public class DarajaApiImpl  implements DarajaApi{
                                 new PhoneNumber(internalStkPushRequest.getPhoneNumber()),
                                 "You entered the wrong Pin")
                         .create();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
 
                 log.error(String.format("Could not perform sending messages request -> %s"
                         , e.getLocalizedMessage()));
 
-            }}else{
+            }}
+        else{
                 ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
                 //need from mobile session
                 externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
