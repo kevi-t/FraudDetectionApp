@@ -3,7 +3,6 @@ package fraud.detection.app.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fraud.detection.app.dto.*;
 import fraud.detection.app.models.StkPush_Entries;
-import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.StkPushEntriesRepository;
 import fraud.detection.app.services.DarajaApi;
 import lombok.SneakyThrows;
@@ -34,10 +33,10 @@ private final AcknowledgeResponse acknowledgeResponse;
         public ResponseEntity<AccessTokenResponse> getAccessToken() {
             return ResponseEntity.ok(darajaApi.getAccessToken());
         }
-    @PostMapping(path = "/stk-transaction-request", produces = "application/json")
+    @PostMapping(path = "/stk-deposit-request", produces = "application/json")
     public ResponseEntity<StkPushSyncResponse> performStkPushTransaction(@RequestBody InternalStkPushRequest internalStkPushRequest) {
 
-        return ResponseEntity.ok(darajaApi.performStkPushTransaction(internalStkPushRequest));
+        return ResponseEntity.ok(darajaApi.DepositStkPushTransaction(internalStkPushRequest));
     }
     @SneakyThrows
     @PostMapping(path = "/stk-transaction-result", produces = "application/json")

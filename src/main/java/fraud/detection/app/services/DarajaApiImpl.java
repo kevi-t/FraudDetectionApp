@@ -125,7 +125,7 @@ public class DarajaApiImpl  implements DarajaApi{
     }
 
     @Override
-    public StkPushSyncResponse performStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
+    public StkPushSyncResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
         String ExtenalPin = internalStkPushRequest.getPin();
         String Accountno = internalStkPushRequest.getPhoneNumber();
         if (helperUtility.checkPin(ExtenalPin, Accountno)==true) {
@@ -144,6 +144,7 @@ public class DarajaApiImpl  implements DarajaApi{
 
             }}else{
                 ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
+                //need from mobile session
                 externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
 
                 String transactionTimestamp = HelperUtility.getTransactionTimestamp();
