@@ -46,7 +46,7 @@ public class SecurityConfigaration {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests().requestMatchers
-                        ("/fraud/app/register","/fraud/app/login","/otp/send","/otp/verify","/mobile-money/stk-transaction-request","/mobile-money/token").permitAll()
+                        ("/fraud/app/register","/fraud/app/login","/otp/send","/otp/verify","/mobile-money/stk-deposit-request","/mobile-money/token").permitAll()
                 .and()
                 .authorizeHttpRequests().requestMatchers
                         ("/api/auth//getusers").hasAuthority("Admin")
