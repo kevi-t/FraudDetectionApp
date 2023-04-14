@@ -162,25 +162,8 @@ public class DarajaApiImpl  implements DarajaApi{
                 externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
                 externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
                 externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
-                //Inserting transaction in transaction table
-                Transaction TransObj = new Transaction();
-                var trans = TransObj.builder()
-                        .transactionAmount(internalStkPushRequest.getAmount())
-                        .transactionType("Deposit")
-                        .ReferenceCode(HelperUtility.getTransactionUniqueNumber())
-                        .Debited(internalStkPushRequest.getPhoneNumber())
-                        .Credited(internalStkPushRequest.getPhoneNumber())
-                        .Status("0")
-                        .build();
-                transactionRepository.save(trans);
-                // Updating Accounts table
-                Account mtransactionAccount = accountRepository.findByAccountNumber(internalStkPushRequest.getPhoneNumber());
-                double currentAccountbBalance = mtransactionAccount.getAccountBalance();
-                UpdatedAccountBalance = currentAccountbBalance + internalStkPushRequest.getAmount();
-                AccessTokenResponse accessTokenResponse = getAccessToken();
-                mtransactionAccount.setAccountBalance(UpdatedAccountBalance);
-                mtransactionAccount.setBalanceBefore(currentAccountbBalance);
-                accountRepository.save(mtransactionAccount);
+
+            AccessTokenResponse accessTokenResponse = getAccessToken();
                 RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
                         Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
                 Request request = new Request.Builder()
@@ -194,6 +177,24 @@ public class DarajaApiImpl  implements DarajaApi{
                     Response response = okHttpClient.newCall(request).execute();
                     assert response.body() != null;
                     // use Jackson to Decode the ResponseBody ...
+                    //Inserting transaction in transaction table
+                    Transaction TransObj = new Transaction();
+                    var trans = TransObj.builder()
+                            .transactionAmount(internalStkPushRequest.getAmount())
+                            .transactionType("Deposit")
+                            .ReferenceCode(HelperUtility.getTransactionUniqueNumber())
+                            .Debited(internalStkPushRequest.getPhoneNumber())
+                            .Credited(internalStkPushRequest.getPhoneNumber())
+                            .Status("0")
+                            .build();
+                    transactionRepository.save(trans);
+                    // Updating Accounts table
+                    Account mtransactionAccount = accountRepository.findByAccountNumber(internalStkPushRequest.getPhoneNumber());
+                    double currentAccountbBalance = mtransactionAccount.getAccountBalance();
+                    UpdatedAccountBalance = currentAccountbBalance + internalStkPushRequest.getAmount();
+                    mtransactionAccount.setAccountBalance(UpdatedAccountBalance);
+                    mtransactionAccount.setBalanceBefore(currentAccountbBalance);
+                    accountRepository.save(mtransactionAccount);
 
                     stkPushSyncResponse = objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
                 } catch (IOException e) {
