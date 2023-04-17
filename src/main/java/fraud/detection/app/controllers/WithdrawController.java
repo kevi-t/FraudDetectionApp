@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/fraud/app")
+@RequestMapping("/fraud/app/account")
 @Validated
 @Slf4j
 public class WithdrawController {
