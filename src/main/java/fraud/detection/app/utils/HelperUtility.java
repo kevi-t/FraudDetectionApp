@@ -1,6 +1,7 @@
 package fraud.detection.app.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
@@ -86,6 +87,17 @@ public class HelperUtility {
         }
 
     }
+    public Boolean checkAccountBalance(String accountNo,double transactionAmount){
+     Account account= accountRepository.findByAccountNumber(accountNo);
+     if (account.getAccountBalance()>transactionAmount){
+         return true;
+     }else {
+         return false;
+     }
+
+    }
+
+
 
     //Generating unique reference code
     public static String referenceCodeGenerator(){

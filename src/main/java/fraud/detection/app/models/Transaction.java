@@ -21,8 +21,8 @@ public class Transaction {
     private String transactionType;
     private double transactionAmount;
     private String Status;
-    private String Debited;
-    private String Credited;
+    private double Debited;
+    private double Credited;
     private String receiverAccount;
     private String senderAccount;
     private String ReferenceCode;

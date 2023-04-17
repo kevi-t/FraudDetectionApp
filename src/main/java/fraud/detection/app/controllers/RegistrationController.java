@@ -1,6 +1,7 @@
 package fraud.detection.app.controllers;
 
 import fraud.detection.app.dto.RegisterDTO;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.RegistrationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register( @Valid @RequestBody RegisterDTO request)
+    public ResponseEntity<UniversalResponse> register(@Valid @RequestBody RegisterDTO request)
     {
         try{
             return ResponseEntity.ok(registrationService.register(request));

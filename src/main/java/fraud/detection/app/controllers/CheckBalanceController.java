@@ -25,7 +25,7 @@ public class CheckBalanceController {
         this.checkBalanceService = checkBalanceService;
     }
 
-    @PostMapping("/balance")
+    @PostMapping("/account-balance")
     public ResponseEntity<?> checkBalance(@Valid @RequestBody CheckBalanceDTO request){
         try{
             return ResponseEntity.ok(checkBalanceService.checkBalance(request));
