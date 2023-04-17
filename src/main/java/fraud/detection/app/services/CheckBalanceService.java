@@ -50,7 +50,7 @@ public class CheckBalanceService {
             }
             else if (passwordEncoder.matches(EnteredPin, DatabasePin)){
                 System.out.println("You Entered The wrong Pin");
-                return UniversalResponse.builder().message("You Entered The wrong Pin!").status(0).build();
+                return UniversalResponse.builder().message("You Entered The wrong Pin!").status("failed").build();
             }
             else {
                 try{
@@ -65,7 +65,7 @@ public class CheckBalanceService {
                             .transactionAmount(accountNumber.getAccountBalance())
                             .ReferenceCode(referenceCode)
                             .transactionType("CHECK BALANCE")
-                            .Status("0")
+                            .Status("success")
                             .build();
                     transactionRepository.save(transaction);
 
@@ -84,12 +84,12 @@ public class CheckBalanceService {
                     }
                     catch (Exception ex) {
                         System.out.println("Error While Sending Transaction Message" + ex);
-                        return UniversalResponse.builder().message("Error While Sending Transaction Message").status(0).build();
+                        return UniversalResponse.builder().message("Error While Sending Transaction Message").status("failed").build();
                     }
 
                 }
                 catch (Exception ex){
-                    return UniversalResponse.builder().message("Transaction Error").status(0).build();
+                    return UniversalResponse.builder().message("Transaction Error").status("failed").build();
                 }
             }
         }

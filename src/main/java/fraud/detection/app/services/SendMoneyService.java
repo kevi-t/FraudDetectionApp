@@ -34,7 +34,7 @@ public class SendMoneyService {
                 if (helperUtility.checkAccount(request.getReceiverAccountNumber())){
                     UniversalResponse response= UniversalResponse.builder()
                             .message("The Mission Customer does not exist")
-                            .status(0)
+                            .status("failed")
                             .build();
                     return  response;
                 }
@@ -68,9 +68,9 @@ public class SendMoneyService {
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
-                                            .Debited(request.getSenderAccountNumber())
-                                            .Credited(request.getReceiverAccountNumber())
-                                            .Status("0")
+                                            .Debited(request.getTransactionAmount())
+                                            .Credited(request.getTransactionAmount())
+                                            .Status("success")
                                             .build();
                                     transactionRepository.save(trans);
                                 }
@@ -82,9 +82,9 @@ public class SendMoneyService {
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
-                                            .Debited(request.getSenderAccountNumber())
-                                            .Credited(request.getReceiverAccountNumber())
-                                            .Status("1")
+                                            .Debited(request.getTransactionAmount())
+                                            .Credited(request.getTransactionAmount())
+                                            .Status("failed")
                                             .build();
                                     transactionRepository.save(trans);
 
@@ -130,7 +130,8 @@ public class SendMoneyService {
                                 System.out.println("Transaction Error"+ex);
                                 UniversalResponse response= UniversalResponse.builder()
                                         .message("Transaction Error")
-                                        .status(0)
+                                        .status("failed")
+                                        .data(request)
                                         .build();
                                 return  response;
                             }
@@ -146,15 +147,16 @@ public class SendMoneyService {
                                     .ReferenceCode(referenceCode)
                                     .senderAccount(request.getSenderAccountNumber())
                                     .receiverAccount(request.getReceiverAccountNumber())
-                                    .Debited(request.getSenderAccountNumber())
-                                    .Credited(request.getReceiverAccountNumber())
-                                    .Status("1")
+                                    .Debited(request.getTransactionAmount())
+                                    .Credited(request.getTransactionAmount())
+                                    .Status("failed not enough balance")
                                     .build();
                             transactionRepository.save(trans);
 
                             UniversalResponse response= UniversalResponse.builder()
                                     .message("Insufficient funds")
-                                    .status(0)
+                                    .status("failed")
+                                    .data(request)
                                     .build();
                             return  response;
                         }
@@ -173,14 +175,15 @@ public class SendMoneyService {
                         .ReferenceCode(referenceCode)
                         .senderAccount(request.getSenderAccountNumber())
                         .receiverAccount(request.getReceiverAccountNumber())
-                        .Debited(request.getSenderAccountNumber())
-                        .Credited(request.getReceiverAccountNumber())
-                        .Status("1")
+                        .Debited(request.getTransactionAmount())
+                        .Credited(request.getTransactionAmount())
+                        .Status("failed")
                         .build();
                 System.out.println("Transaction Failed"+ex);
                 UniversalResponse response= UniversalResponse.builder()
                         .message("Transaction Failed")
-                        .status(1)
+                        .status("failed")
+                        .data(request)
                         .build();
                 return  response;
             }
@@ -188,7 +191,8 @@ public class SendMoneyService {
         else {
             UniversalResponse response= UniversalResponse.builder()
                     .message("You Entered The wrong Pin!")
-                    .status(1)
+                    .status("failed")
+                    .data(request)
                     .build();
             return  response;
         }

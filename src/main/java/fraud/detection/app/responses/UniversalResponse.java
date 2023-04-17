@@ -11,8 +11,8 @@ import java.io.Serializable;
 @Setter
 public class UniversalResponse implements Serializable {
 
-    private int status;
+    private String status;
     private String message;
-    private String data;
+    private Object data;
     //TODO: implement how to display data to the client
 }

@@ -51,7 +51,7 @@ public class WithdrawService {
             }
             else if (passwordEncoder.matches(EnteredPin, DatabasePin)) {
                 System.out.println("You Entered The wrong Pin");
-                return UniversalResponse.builder().message("You entered the wrong pin!").status(0).build();
+                return UniversalResponse.builder().message("You entered the wrong pin!").status("failed").build();
             }
             else{
                 double inputAmount = request.getTransactionAmount();
@@ -68,12 +68,12 @@ public class WithdrawService {
                             .ReferenceCode(referenceCode)
                             .senderAccount(request.getAccountNumber())
                             .receiverAccount(request.getAccountNumber())
-                            .Debited(request.getAccountNumber())
-                            .Credited(request.getAccountNumber())
-                            .Status("1")
+                            .Debited(request.getTransactionAmount())
+                            .Credited(request.getTransactionAmount())
+                            .Status("failed")
                             .build();
                     transactionRepository.save(trans);
-                    return UniversalResponse.builder().message("Transaction failed insufficient funds  balance: "+currentBalance).status(0).build();
+                    return UniversalResponse.builder().message("Transaction failed insufficient funds  balance: "+currentBalance).status("failed").build();
                 }
                 else {
 
@@ -88,9 +88,9 @@ public class WithdrawService {
                                 .transactionAmount(request.getTransactionAmount())
                                 .ReferenceCode(referenceCode)
                                 .transactionType("WITHDRAW")
-                                .Debited(request.getAccountNumber())
-                                .Credited(request.getAccountNumber())
-                                .Status("0")
+                                .Debited(request.getTransactionAmount())
+                                .Credited(request.getTransactionAmount())
+                                .Status("success")
                                 .build();
                         transactionRepository.save(transaction);
 
@@ -111,7 +111,7 @@ public class WithdrawService {
                         }
                         catch (Exception ex) {
                             System.out.println("Error While Sending Transaction Message" + ex);
-                            return UniversalResponse.builder().message("Error While Sending Transaction Message").status(0).build();
+                            return UniversalResponse.builder().message("Error While Sending Transaction Message").status("failed").build();
                         }
                     }
                     catch (Exception ex){
@@ -122,12 +122,12 @@ public class WithdrawService {
                                 .ReferenceCode(referenceCode)
                                 .senderAccount(request.getAccountNumber())
                                 .receiverAccount(request.getAccountNumber())
-                                .Debited(request.getAccountNumber())
-                                .Credited(request.getAccountNumber())
-                                .Status("1")
+                                .Debited(request.getTransactionAmount())
+                                .Credited(request.getTransactionAmount())
+                                .Status("failed")
                                 .build();
                         transactionRepository.save(trans);
-                        return UniversalResponse.builder().message("Transaction Failed").status(0).build();
+                        return UniversalResponse.builder().message("Transaction Failed").status("failed").build();
                     }
                 }
             }

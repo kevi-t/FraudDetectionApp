@@ -26,7 +26,10 @@ public class RegistrationService {
         String phone = request.getMobileNumber();
         try {
             if (userRepository.findUserByEmail(request.getEmail()) != null) {
-                return UniversalResponse.builder().message("User with this email Already Exist").status(0).build();
+                return UniversalResponse.builder().message("User with this email Already Exist")
+                        .status("failed")
+                        .data(request)
+                        .build();
             } else if (userRepository.findUserBymobileNumber(phone) == null) {
 
                 var user = User.builder()
@@ -54,12 +57,18 @@ public class RegistrationService {
                             .balanceBefore(0.01)
                             .build();//.user(user)
                     accountRepository.save(account);
-                    return UniversalResponse.builder().message("User Registered Successfully").status(0).build();
+                    return UniversalResponse.builder().message("User Registered Successfully")
+                            .status("success")
+                            .data(request)
+                            .build();
                 } catch (Exception ex) {
                     System.out.println("Registration failed{}" + ex);
                 }
             } else {
-                return UniversalResponse.builder().message("User Already Registered, Please Login").status(0).build();
+                return UniversalResponse.builder().message("User Already Registered, Please Login")
+                        .status("failed")
+                        .data(request)
+                        .build();
             }
         } catch (Exception ex) {
             System.out.println("Saving User Failed{}" + ex);

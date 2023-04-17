@@ -1,5 +1,6 @@
 package fraud.detection.app.controllers;
 import fraud.detection.app.dto.AuthenticationDTO;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.AuthenticateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class AuthenticationController {
    private final AuthenticateService authenticateService;
 
    @PostMapping("/login")
-   public ResponseEntity<?> login(@RequestBody AuthenticationDTO request) {
+   public ResponseEntity<UniversalResponse> login(@RequestBody AuthenticationDTO request) {
       return ResponseEntity.ok(authenticateService.login(request));
    }
 

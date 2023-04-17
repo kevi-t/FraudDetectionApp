@@ -34,18 +34,33 @@ public class AuthenticateService {
              SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (Exception ex){
-            return UniversalResponse.builder().message("Username or Pin incorrect").build();
+            UniversalResponse response= UniversalResponse.builder()
+                    .message("Username or pin Incorrect")
+                    .status("failed")
+                    .data(request)
+                    .build();
+            return  response;
         }
         try {
             User user = userRepository.findUserBymobileNumber(request.getMobileNumber());
             if (user == null) {
-                return UniversalResponse.builder().message("User not found, Please Register").build();
+                UniversalResponse response= UniversalResponse.builder()
+                        .message("user not found please register")
+                        .status("failed")
+                        .data(request)
+                        .build();
+                return  response;
             }
             else {
                 try{
                     String jwt = jwtTokenUtil.createToken(request.getMobileNumber());
                     Account accountNumber = accountRepository.findByAccountNumber(request.getMobileNumber());
-                    return  UniversalResponse.builder().message("Login Successful").data(jwt).build();
+                    UniversalResponse response= UniversalResponse.builder()
+                            .message("Login successful")
+                            .status("success")
+                            .data(jwt)
+                            .build();
+                    return  response;
                 }
                 catch (Exception ex){
                     System.out.println("Token failure");
