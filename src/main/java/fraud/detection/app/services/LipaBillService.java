@@ -15,7 +15,7 @@ public class LipaBillService {
     private final HelperUtility helperUtility;
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
-
+private UniversalResponse response;
 
     public LipaBillService(HelperUtility helperUtility
             , AccountRepository accountRepository
@@ -65,7 +65,7 @@ public class LipaBillService {
                     .build();
             return  response;
         }
-        return null;
+        return response;
     }
 
 }
