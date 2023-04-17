@@ -49,6 +49,9 @@ public class JwtTokenFilter extends OncePerRequestFilter  {
         else if (request.getServletPath().equals("/stk-deposit-request")){
             filterChain.doFilter(request, response);
         }
+        else if (request.getServletPath().equals("/fraud/app/withdraw")){
+            filterChain.doFilter(request, response);
+        }
         else {
            // UniversalResponse universalResponse;
             String authorizationHeader = request.getHeader("Authorization");

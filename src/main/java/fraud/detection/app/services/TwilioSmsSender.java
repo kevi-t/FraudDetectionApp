@@ -30,7 +30,9 @@ public class TwilioSmsSender  {
     public void SendSms(SmsRequest smsRequest) {
         try {
             LocalDateTime Expiry = LocalDateTime.now().plusMinutes(5);
-            Message twilioMessage = Message.creator(new PhoneNumber(smsRequest.getPhoneNumber()),new PhoneNumber(twilioConfig.getTrial_number()),String.valueOf(smsRequest.getMessage())).create();
+            Message twilioMessage = Message.creator(new PhoneNumber(smsRequest.getPhoneNumber()),
+                    new PhoneNumber(twilioConfig.getTrial_number()),
+                    String.valueOf(smsRequest.getMessage())).create();
 
             Otp otp1= Otp.builder().otpExpiryTime(Expiry).mobileNumber(smsRequest.getPhoneNumber()).otp(smsRequest.getMessage()).build();
             otpRepository.save(otp1);

@@ -93,7 +93,7 @@ public class OtpController {
             System.out.println((request.getOtp()));
 
             if (SavedOTP!= (request.getOtp())){
-                return UniversalResponse.builder().message("You Entered the  OTP").status(0).build();
+                return UniversalResponse.builder().message("You Entered the wrong OTP").status(0).build();
             }
             if (minutes==5) {
                 UniversalResponse response= UniversalResponse.builder().message("OTP verified").status(0).build();
