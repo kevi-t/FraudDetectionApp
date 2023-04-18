@@ -1,17 +1,20 @@
 package fraud.detection.app.dto;
-
-import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+
+@Validated
 @Data
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class LipaBillDto {
-    @NotEmpty(message = "This field 'pin' should not be empty")
+
     private String pin;
-    @NotEmpty(message = "This field 'payerno' should not be empty")
-    private String PayerNo;
-    @NotEmpty(message = "This field 'paybill' should not be empty")
+    private String payerNo;
     private String payBillNo;
-    @NotEmpty(message = "This field 'amount' should not be empty")
     private double amount;
 
 }
