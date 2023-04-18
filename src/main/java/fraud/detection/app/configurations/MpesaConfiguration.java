@@ -23,6 +23,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
         private String stkPushShortCode;
         private String stkPushRequestUrl;
         private String stkPushRequestCallbackUrl;
+        private String b2cTransactionEndpoint;
+        private String b2cResultUrl;
+        private String b2cQueueTimeoutUrl;
+        private String b2cInitiatorName;
+        private String b2cInitiatorPassword;
+        private String commandID;
         @Override
         public String toString() {
             return String.format("{consumerKey='%s', consumerSecret='%s', grantType='%s', oauthEndpoint='%s'}",
