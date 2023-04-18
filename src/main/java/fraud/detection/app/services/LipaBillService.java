@@ -1,34 +1,44 @@
 package fraud.detection.app.services;
 
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.LipaBillDto;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
-import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.HelperUtility;
-import org.springframework.http.ResponseEntity;
+import fraud.detection.app.utils.LogFileCreator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class LipaBillService {
+    private final LogFileCreator logFileCreator;
     private final HelperUtility helperUtility;
     private final AccountRepository accountRepository;
-    private final TransactionRepository transactionRepository;
+    private final TwilioConfiguration twilioConfiguration;
+private UniversalResponse response;
 
-
-    public LipaBillService(HelperUtility helperUtility
+    public LipaBillService(LogFileCreator logFileCreator, HelperUtility helperUtility
             , AccountRepository accountRepository
-            , TransactionRepository transactionRepository) {
+            , TwilioConfiguration twilioConfiguration) {
+        this.logFileCreator = logFileCreator;
         this.helperUtility = helperUtility;
         this.accountRepository = accountRepository;
-        this.transactionRepository = transactionRepository;
+        this.twilioConfiguration = twilioConfiguration;
     }
 
     public UniversalResponse lipaBill(LipaBillDto request) {
-        if (helperUtility.checkPin(request.getPayBillNo(), request.getPin())) {
+
+        System.out.println("Payeeerr"+request.getPayerNo());
+        Account account=accountRepository.findByAccountNumber(request.getPayerNo());
+        System.out.println(account);
+        if (helperUtility.checkPin(request.getPin(),request.getPayerNo())) {
             if (helperUtility.checkAccountBalance(request.getPayerNo(), request.getAmount())) {
-                Account account = accountRepository.findByAccountNumber(request.getPayerNo());
+                 account = accountRepository.findByAccountNumber(request.getPayerNo());
                 double updatedAccountBalance = account.getAccountBalance() - request.getAmount();
                 //updating Accounts Table
                 double BeforeAccountBalance = account.getAccountBalance();
@@ -47,6 +57,21 @@ public class LipaBillService {
                         .transactionAmount(request.getAmount())
                         .ReferenceCode(helperUtility.getTransactionUniqueNumber()).
                         build();
+                //sending message to the payee
+                try {
+                                                 Message.creator(
+                                                    new PhoneNumber(request.getPayerNo()),
+                                                    new PhoneNumber(twilioConfiguration.getTrial_number()),
+                                                    "You have Payed Ksh:" + request.
+                                                            getAmount() + "To Paybill No:"
+                                                            + request.getPayBillNo()
+                                                            + "You new Account Balance is Ksh:" + updatedAccountBalance)
+                                                    .create();
+                                }
+                                catch (Exception ex) {
+                                    System.out.println("Error While Sending Transaction Message" + ex);
+log.info("Error While Sending Transaction Message ==>" + ex);
+                                }
             } else {
                 UniversalResponse response= UniversalResponse.builder()
                         .message("You have Insufficient Balance")
@@ -65,7 +90,7 @@ public class LipaBillService {
                     .build();
             return  response;
         }
-        return null;
+        return response;
     }
 
 }

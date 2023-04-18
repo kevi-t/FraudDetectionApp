@@ -1,6 +1,7 @@
 package fraud.detection.app.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,7 @@ public class User implements UserDetails {
     @NotNull(message = "This field 'model' should not be empty")
     @Column(unique = true)
     private String mobileNumber;
+    @Email
     @NotNull(message = "This field 'model' should not be empty")
     private String email;
     @NotNull(message = "This field 'model' should not be empty")

@@ -12,6 +12,7 @@ import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
+import fraud.detection.app.utils.Logs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class WithdrawService {
-
+public final Logs logs;
     private final TwilioConfiguration twilioConfig;
     private  final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
@@ -31,7 +32,12 @@ public class WithdrawService {
     public  UniversalResponse response;
 
     @Autowired
-    public WithdrawService(TwilioConfiguration twilioConfig, AccountRepository accountRepository, TransactionRepository transactionRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public WithdrawService(Logs logs, TwilioConfiguration twilioConfig
+            , AccountRepository accountRepository
+            , TransactionRepository transactionRepository
+            , UserRepository userRepository
+            , PasswordEncoder passwordEncoder) {
+        this.logs = logs;
         this.twilioConfig = twilioConfig;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
@@ -110,11 +116,12 @@ public class WithdrawService {
                             return  UniversalResponse.builder().message("Withdraw Request of Amount:"+request.getTransactionAmount()+"Successful new account Balance: "+accountNumber2.getAccountBalance()).build();
                         }
                         catch (Exception ex) {
-                            System.out.println("Error While Sending Transaction Message" + ex);
+                            logs.log("Error While Sending Transaction Message===>" +ex.getMessage());
                             return UniversalResponse.builder().message("Error While Sending Transaction Message").status("failed").build();
                         }
                     }
                     catch (Exception ex){
+                        logs.log(ex.getMessage());
                         ex.printStackTrace();
                         var trans = Transaction.builder()
                                 .transactionAmount((float) request.getTransactionAmount())
@@ -133,7 +140,7 @@ public class WithdrawService {
             }
         }
         catch (Exception e){
-            e.printStackTrace();
+           logs.log(e.getMessage());
         }
         return response;
     }

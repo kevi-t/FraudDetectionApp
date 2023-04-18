@@ -5,9 +5,18 @@ import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
+import lombok.SneakyThrows;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 
@@ -16,9 +25,16 @@ import java.util.Date;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 @Slf4j
 @Service
 public class HelperUtility {
@@ -105,6 +121,63 @@ public class HelperUtility {
         String referenceCode = "TUCN" + randomUUIDString;
         return referenceCode;
     }
+
+
+    @SneakyThrows
+    public static String getSecurityCredentials(String initiatorPassword) {
+
+        try {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+            byte[] input = initiatorPassword.getBytes(StandardCharsets.UTF_8);
+
+            Resource resource = new ClassPathResource("cert.cer");
+            InputStream inputStream = resource.getInputStream();
+
+            FileInputStream fin = new FileInputStream(resource.getFile());
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC");
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate certificate = (X509Certificate) cf.generateCertificate(fin);
+            PublicKey pk = certificate.getPublicKey();
+            cipher.init(Cipher.ENCRYPT_MODE, pk);
+
+            byte[] cipherText = cipher.doFinal(input);
+            String cipherText2 = cipherText.toString();
+            // Convert the resulting encrypted byte array into a string using base64 encoding
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                String encryptedPassword = passwordEncoder.encode(cipherText2).trim();
+
+            return encryptedPassword;
+        } catch (NoSuchAlgorithmException | CertificateException | InvalidKeyException | NoSuchPaddingException |
+                 IllegalBlockSizeException | BadPaddingException | NoSuchProviderException | FileNotFoundException e) {
+            log.error(String.format("Error generating security credentials ->%s", e.getLocalizedMessage()));
+            throw e;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+
+
+    public static String checkPhoneNumber(String phoneNumber) {
+        if (phoneNumber.matches("^((\\+)?254|0|01)\\d{8}$")) {
+            if (phoneNumber.startsWith("+254")) {
+                return phoneNumber.substring(1);
+            } else if (phoneNumber.startsWith("01")) {
+                return "254" + phoneNumber.substring(2);
+            } else if (phoneNumber.startsWith("07")) {
+                return "254" + phoneNumber.substring(2);
+            } else {
+                return phoneNumber;
+            }
+        } else {
+            return "Invalid phone number";
+        }
+    }
+
+
+
+
 }
 
 

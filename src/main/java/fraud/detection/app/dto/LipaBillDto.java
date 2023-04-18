@@ -1,14 +1,20 @@
 package fraud.detection.app.dto;
-
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
-@Builder
+@Validated
 @Data
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class LipaBillDto {
+
     private String pin;
-    private String PayerNo;
+    private String payerNo;
     private String payBillNo;
-    private float amount;
+    private double amount;
 
 }
