@@ -70,7 +70,8 @@ public class DarajaApiImpl  implements DarajaApi{
 
             // use Jackson to Decode the ResponseBody ...
             return objectMapper.readValue(response.body().string(), AccessTokenResponse.class);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             log.error(String.format("Could not get access token. -> %s", e.getLocalizedMessage()));
             return null;
         }
@@ -78,6 +79,7 @@ public class DarajaApiImpl  implements DarajaApi{
 
     @Override
     public AccessTokenResponse registerUrl() throws IOException {
+
         AccessTokenResponse accessTokenResponse = getAccessToken();
 
         RegisterUrlRequest registerUrlRequest = new RegisterUrlRequest();
@@ -118,7 +120,8 @@ public class DarajaApiImpl  implements DarajaApi{
 
             // use Jackson to Decode the ResponseBody ...
             return objectMapper.readValue(response.body().string(), AccessTokenResponse.class);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             log.error(String.format("Could not get access token. -> %s", e.getLocalizedMessage()));
             return null;
         }
@@ -126,11 +129,12 @@ public class DarajaApiImpl  implements DarajaApi{
 
     @Override
     public StkPushSyncResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
-        String ExtenalPin = internalStkPushRequest.getPin();
-        String Accountno = internalStkPushRequest.getPhoneNumber();
-        if (helperUtility.checkPin(ExtenalPin, Accountno)==false) {
 
-//    ToDo: Send A message to the user telling them they entered the wrong pin
+        String ExternalPin = internalStkPushRequest.getPin();
+        String AccountNo = internalStkPushRequest.getPhoneNumber();
+        if (helperUtility.checkPin(ExternalPin, AccountNo)==false) {
+
+            //Send A message to the user telling them they entered the wrong pin
             try {
                 Message twilioMessage = Message.creator(
                                 new PhoneNumber("+254 112 016790"),
@@ -139,71 +143,67 @@ public class DarajaApiImpl  implements DarajaApi{
                         .create();
             }
             catch (Exception e) {
-
-                log.error(String.format("Could not perform sending messages request -> %s"
-                        , e.getLocalizedMessage()));
-
-            }}
+                log.error(String.format("Could not perform sending messages request -> %s", e.getLocalizedMessage()));
+            }
+        }
         else{
-                ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
-                //need from mobile session
-                externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
-
-                String transactionTimestamp = HelperUtility.getTransactionTimestamp();
-                String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),
-                        mpesaConfiguration.getStkPassKey(), transactionTimestamp);
-                externalStkPushRequest.setPassword(stkPushPassword);
-                externalStkPushRequest.setTimestamp(transactionTimestamp);
-                externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
-                externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
-                externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
-                externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
-                externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
-                externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
-                externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
-                externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
+            ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
+            //need from mobile session
+            externalStkPushRequest.setBusinessShortCode(mpesaConfiguration.getStkPushShortCode());
+            String transactionTimestamp = HelperUtility.getTransactionTimestamp();
+            String stkPushPassword = HelperUtility.getStkPushPassword(mpesaConfiguration.getStkPushShortCode(),mpesaConfiguration.getStkPassKey(), transactionTimestamp);
+            externalStkPushRequest.setPassword(stkPushPassword);
+            externalStkPushRequest.setTimestamp(transactionTimestamp);
+            externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
+            externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
+            externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
+            externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
+            externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
+            externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
+            externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
+            externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
 
             AccessTokenResponse accessTokenResponse = getAccessToken();
-                RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,
-                        Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
-                Request request = new Request.Builder()
-                        .url(mpesaConfiguration.getStkPushRequestUrl())
-                        .post(body)
-                        .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
-                        .build();
+            RequestBody body = RequestBody.create(JSON_MEDIA_TYPE,Objects.requireNonNull(HelperUtility.toJson(externalStkPushRequest)));
+            Request request = new Request.Builder()
+                    .url(mpesaConfiguration.getStkPushRequestUrl())
+                    .post(body)
+                    .addHeader(AUTHORIZATION_HEADER_STRING, String.format("%s %s", BEARER_AUTH_STRING, accessTokenResponse.getAccessToken()))
+                    .build();
+            try {
+                Response response = okHttpClient.newCall(request).execute();
+                assert response.body() != null;
 
-
-                try {
-                    Response response = okHttpClient.newCall(request).execute();
-                    assert response.body() != null;
-                    // use Jackson to Decode the ResponseBody ...
-                    //Inserting transaction in transaction table
-                    Transaction TransObj = new Transaction();
-                    var trans = TransObj.builder()
+                // use Jackson to Decode the ResponseBody ...
+                //Inserting transaction in transaction table
+                Transaction TransObj = new Transaction();
+                var trans = TransObj.builder()
                             .transactionAmount(internalStkPushRequest.getAmount())
-                            .transactionType("Deposit")
+                            .transactionType("DEPOSIT")
                             .ReferenceCode(HelperUtility.getTransactionUniqueNumber())
-                            .Debited(internalStkPushRequest.getAmount())
-                            .Credited(internalStkPushRequest.getAmount())
-                            .Status("0")
+                            .Debited(Double.parseDouble("-"+internalStkPushRequest.getAmount()))
+                            .Credited(Double.parseDouble("+"+internalStkPushRequest.getAmount()))
+                            .senderAccount(internalStkPushRequest.getPhoneNumber())
+                            .Status("success")
                             .build();
-                    transactionRepository.save(trans);
-                    // Updating Accounts table
-                    Account mtransactionAccount = accountRepository.findByAccountNumber(internalStkPushRequest.getPhoneNumber());
-                    double currentAccountbBalance = mtransactionAccount.getAccountBalance();
-                    UpdatedAccountBalance = currentAccountbBalance + internalStkPushRequest.getAmount();
-                    mtransactionAccount.setAccountBalance(UpdatedAccountBalance);
-                    mtransactionAccount.setBalanceBefore(currentAccountbBalance);
-                    accountRepository.save(mtransactionAccount);
+                transactionRepository.save(trans);
 
-                    stkPushSyncResponse = objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
-                } catch (IOException e) {
-                    log.error(String.format("Could not perform the STK push request -> %s", e.getLocalizedMessage()));
-                    return null;
-                }
+                // Updating Accounts table
+                Account mtransactionAccount = accountRepository.findByAccountNumber(internalStkPushRequest.getPhoneNumber());
+                double currentAccountBalance = mtransactionAccount.getAccountBalance();
+                UpdatedAccountBalance = currentAccountBalance + internalStkPushRequest.getAmount();
+                mtransactionAccount.setAccountBalance(UpdatedAccountBalance);
+                mtransactionAccount.setBalanceBefore(currentAccountBalance);
+                accountRepository.save(mtransactionAccount);
+
+                stkPushSyncResponse = objectMapper.readValue(response.body().string(), StkPushSyncResponse.class);
             }
-            return stkPushSyncResponse;
+            catch (IOException e) {
+                log.error(String.format("Could not perform the STK push request -> %s", e.getLocalizedMessage()));
+                return null;
+            }
         }
-
-
+        return stkPushSyncResponse;
     }
+
+}

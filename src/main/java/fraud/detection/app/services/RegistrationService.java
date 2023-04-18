@@ -28,9 +28,9 @@ public class RegistrationService {
             if (userRepository.findUserByEmail(request.getEmail()) != null) {
                 return UniversalResponse.builder().message("User with this email Already Exist")
                         .status("failed")
-                        .data(request)
                         .build();
-            } else if (userRepository.findUserBymobileNumber(phone) == null) {
+            }
+            else if (userRepository.findUserBymobileNumber(phone) == null) {
 
                 var user = User.builder()
                         .firstName(request.getFirstName())
@@ -53,24 +53,25 @@ public class RegistrationService {
                     var account = Account.builder()
                             .accountNumber(request.getMobileNumber())
                             .openedBy(user.getMobileNumber())
-                            .accountBalance(0.55)
-                            .balanceBefore(0.01)
-                            .build();//.user(user)
+                            .accountBalance(0.00)
+                            .balanceBefore(0.00)
+                            .build();
                     accountRepository.save(account);
                     return UniversalResponse.builder().message("User Registered Successfully")
                             .status("success")
-                            .data(request)
                             .build();
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     System.out.println("Registration failed{}" + ex);
                 }
-            } else {
+            }
+            else {
                 return UniversalResponse.builder().message("User Already Registered, Please Login")
                         .status("failed")
-                        .data(request)
                         .build();
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             System.out.println("Saving User Failed{}" + ex);
             //TODO: Save method to be a boolean,if fails to save send error
         }

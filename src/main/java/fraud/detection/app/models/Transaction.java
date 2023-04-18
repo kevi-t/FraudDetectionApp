@@ -19,11 +19,13 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long transactionId;
     private String transactionType;
+    @Column(scale = 2)
     private double transactionAmount;
     private String Status;
     private double Debited;
     private double Credited;
     private String receiverAccount;
+    @Column(nullable = false, updatable = false)
     private String senderAccount;
     private String ReferenceCode;
     @CreationTimestamp

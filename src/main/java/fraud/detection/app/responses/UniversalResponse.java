@@ -1,14 +1,14 @@
 package fraud.detection.app.responses;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UniversalResponse implements Serializable {
 
     private String status;

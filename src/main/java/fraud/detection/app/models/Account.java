@@ -18,8 +18,9 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    @Column(scale = 2)
     private double accountBalance;//field to update
+    @Column(scale = 2)
     private double balanceBefore;
     private String openedBy;
     @CreationTimestamp

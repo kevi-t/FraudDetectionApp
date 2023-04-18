@@ -43,7 +43,8 @@ public class HelperUtility {
     public static String toJson(Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
-        } catch (JsonProcessingException exception) {
+        }
+        catch (JsonProcessingException exception) {
             return null;
         }
     }
@@ -96,8 +97,6 @@ public class HelperUtility {
      }
 
     }
-
-
 
     //Generating unique reference code
     public static String referenceCodeGenerator(){
