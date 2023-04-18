@@ -2,6 +2,7 @@ package fraud.detection.app.filter;
 
 import fraud.detection.app.services.UserDetailsService;
 import fraud.detection.app.utils.JwtTokenUtil;
+import fraud.detection.app.utils.LogFileCreator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,19 +21,23 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter  {
-
+private final LogFileCreator logFileCreator;
     private final UserDetailsService UserDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public JwtTokenFilter(fraud.detection.app.services.UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
+    public JwtTokenFilter(LogFileCreator logFileCreator
+            , fraud.detection.app.services.UserDetailsService userDetailsService
+            , JwtTokenUtil jwtTokenUtil) {
+        this.logFileCreator = logFileCreator;
         UserDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+    public void doFilterInternal(HttpServletRequest request
+            , HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         if (request.getServletPath().equals("/fraud/app/login")) {
             filterChain.doFilter(request, response);
         }
@@ -61,12 +66,14 @@ public class JwtTokenFilter extends OncePerRequestFilter  {
                 try {
                     token = authorizationHeader.substring(8);
                     username = jwtTokenUtil.extractUsername(token);
-
-                    if(username != null && SecurityContextHolder.getContext().getAuthentication()==null){
-                        UserDetails userDetails = UserDetailsService.loadUserByUsername(username);
+                    if(username != null && SecurityContextHolder
+                            .getContext().getAuthentication()==null){
+                        UserDetails userDetails = UserDetailsService
+                                .loadUserByUsername(username);
 
                         if (jwtTokenUtil.validateToken(token, userDetails)) {
-                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+                            UsernamePasswordAuthenticationToken authenticationToken =
+                                    new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
                             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                             filterChain.doFilter(request, response);

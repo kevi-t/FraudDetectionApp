@@ -157,6 +157,28 @@ public class HelperUtility {
             throw e;
         }
     }
+
+
+
+    public static String checkPhoneNumber(String phoneNumber) {
+        if (phoneNumber.matches("^((\\+)?254|0|01)\\d{8}$")) {
+            if (phoneNumber.startsWith("+254")) {
+                return phoneNumber.substring(1);
+            } else if (phoneNumber.startsWith("01")) {
+                return "254" + phoneNumber.substring(2);
+            } else if (phoneNumber.startsWith("07")) {
+                return "254" + phoneNumber.substring(2);
+            } else {
+                return phoneNumber;
+            }
+        } else {
+            return "Invalid phone number";
+        }
+    }
+
+
+
+
 }
 
 

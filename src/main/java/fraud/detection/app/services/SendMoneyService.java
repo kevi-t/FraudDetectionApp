@@ -9,6 +9,7 @@ import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.HelperUtility;
+import fraud.detection.app.utils.Logs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class SendMoneyService {
-
+    public final Logs logs;
     private  final UserRepository userRepository;
     public  UniversalResponse response;
     public final HelperUtility helperUtility;
@@ -35,6 +36,7 @@ public class SendMoneyService {
                     UniversalResponse response= UniversalResponse.builder()
                             .message("The Mission Customer does not exist")
                             .status("failed")
+                            .data(request)
                             .build();
                     return  response;
                 }
@@ -75,6 +77,7 @@ public class SendMoneyService {
                                     transactionRepository.save(trans);
                                 }
                                 catch (Exception ex){
+                                    logs.log(ex.getMessage());
                                     Transaction TransObj = new Transaction();
                                     var trans = TransObj.builder()
                                             .transactionAmount((float) request.getTransactionAmount())
@@ -87,7 +90,6 @@ public class SendMoneyService {
                                             .Status("failed")
                                             .build();
                                     transactionRepository.save(trans);
-
                                 }
 //
 //                                //Sending messages to the sender and receiver
@@ -162,7 +164,7 @@ public class SendMoneyService {
                         }
                     }
                     catch (Exception ex){
-                        System.out.println(ex);
+                        logs.log(ex.getMessage());
                     }
 
                 }

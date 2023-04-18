@@ -7,23 +7,25 @@ import fraud.detection.app.dto.LipaBillDto;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
-import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.HelperUtility;
+import fraud.detection.app.utils.LogFileCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class LipaBillService {
+    private final LogFileCreator logFileCreator;
     private final HelperUtility helperUtility;
     private final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfiguration;
 private UniversalResponse response;
 
-    public LipaBillService(HelperUtility helperUtility
+    public LipaBillService(LogFileCreator logFileCreator, HelperUtility helperUtility
             , AccountRepository accountRepository
             , TwilioConfiguration twilioConfiguration) {
+        this.logFileCreator = logFileCreator;
         this.helperUtility = helperUtility;
         this.accountRepository = accountRepository;
         this.twilioConfiguration = twilioConfiguration;
