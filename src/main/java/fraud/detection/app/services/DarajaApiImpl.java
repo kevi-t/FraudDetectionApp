@@ -185,6 +185,7 @@ public class DarajaApiImpl  implements DarajaApi{
                             .ReferenceCode(HelperUtility.getTransactionUniqueNumber())
                             .Debited(internalStkPushRequest.getAmount())
                             .Credited(internalStkPushRequest.getAmount())
+                            .senderAccount(internalStkPushRequest.getPhoneNumber())
                             .Status("0")
                             .build();
                     transactionRepository.save(trans);

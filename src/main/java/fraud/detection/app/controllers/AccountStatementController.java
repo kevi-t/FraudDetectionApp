@@ -1,15 +1,16 @@
 package fraud.detection.app.controllers;
 
 import fraud.detection.app.dto.AccountStatementDTO;
+import fraud.detection.app.dto.TransactionResponse;
 import fraud.detection.app.services.AccountStatementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/fraud/app/account")
@@ -22,13 +23,13 @@ public class AccountStatementController {
         this.accountStatementService = accountStatementService;
     }
 
-    @PostMapping("/statement")
-    public ResponseEntity<?> getAllUserTransactions(@Valid @RequestBody AccountStatementDTO request){
-        try{
-            return ResponseEntity.ok(accountStatementService.getAllUserTransactions(request));
+    @GetMapping("/statement")
+    public List<TransactionResponse> getAllUserTransactions(@Valid @RequestBody AccountStatementDTO request){
+
+            return accountStatementService.getAllUserTransactions(request);
+
+//        catch (Exception ex){
+//            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        catch (Exception ex){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-    }
+
 }

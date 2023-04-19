@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.AccountStatementDTO;
+import fraud.detection.app.dto.TransactionResponse;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.TransactionRepository;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,7 +30,7 @@ public class AccountStatementService {
     public UniversalResponse response;
     public final HelperUtility helperUtility;
     String referenceCode = HelperUtility.referenceCodeGenerator();
-
+    List<TransactionResponse> transactionResponses = new ArrayList<>();
     @Autowired
     public AccountStatementService(TransactionRepository transactionRepository,
                                    AccountRepository accountRepository,
@@ -40,7 +42,7 @@ public class AccountStatementService {
         this.helperUtility = helperUtility;
     }
 
-    public UniversalResponse getAllUserTransactions(AccountStatementDTO request) {
+    public List<TransactionResponse> getAllUserTransactions(AccountStatementDTO request) {
 
         try {
 
@@ -48,32 +50,42 @@ public class AccountStatementService {
                 try {
 
                     String account = request.getAccountNumber();
-                    List<Transaction> transactions = transactionRepository.findBySenderAccountOrderByTransactionDate(account);
+                    List<Transaction> transactions = transactionRepository.findBySenderAccount(account);
+                        for (Transaction transaction : transactions) {
+                            TransactionResponse transactionResponse = new TransactionResponse();
+                            transactionResponse.setTransactionId(transaction.getTransactionId());
+                            transactionResponse.setTransactionType(transaction.getTransactionType());
+                            transactionResponse.setTransactionAmount(transaction.getTransactionAmount());
+                            transactionResponse.setCredited(transaction.getCredited());
+                            transactionResponse.setDebited(transaction.getDebited());
+                            transactionResponse.setTransactionDate(transaction.getTransactionDate());
+                            transactionResponse.setReferenceCode(transaction.getReferenceCode());
+                            transactionResponse.setSenderAccount(transaction.getSenderAccount());
+                            transactionResponse.setReceiverAccount(transaction.getReceiverAccount());
+                            transactionResponses.add(transactionResponse);
+                        }
+
                     System.out.println(transactions);
 
-                    return UniversalResponse.builder()
-                            .message("Request Successful")
-                            .data(transactions)
-                            .status("success")
-                            .build();
+                    return transactionResponses;
                 }
                 catch (Exception ex) {
-                    return UniversalResponse.builder()
-                            .message("Request Processing Error")
-                            .status("failed")
-                            .build();
+//                    return UniversalResponse.builder()
+//                            .message("Request Processing Error")
+//                            .status("failed")
+//                            .build();
                 }
             }
             else {
-                return UniversalResponse.builder()
-                        .message("Wrong pin!")
-                        .status("failed")
-                        .build();
+//                return UniversalResponse.builder()
+//                        .message("Wrong pin!")
+//                        .status("failed")
+//                        .build();
             }
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        return response;
+        return transactionResponses;
     }
 }

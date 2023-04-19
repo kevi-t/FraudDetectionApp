@@ -1,25 +1,19 @@
-package fraud.detection.app.models;
+package fraud.detection.app.dto;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-
-@Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class Transaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
+public class TransactionResponse {
     private Long transactionId;
     private String transactionType;
-    @Column(scale = 2)
     private double transactionAmount;
     private String Status;
     private double Debited;
@@ -27,7 +21,6 @@ public class Transaction {
     private String receiverAccount;
     private String senderAccount;
     private String ReferenceCode;
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime transactionDate;
 }
