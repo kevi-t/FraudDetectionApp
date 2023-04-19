@@ -1,6 +1,9 @@
 package fraud.detection.app.configurations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import fraud.detection.app.filter.JwtTokenFilter;
 import fraud.detection.app.services.UserDetailsService;
 import jakarta.transaction.Transactional;
@@ -19,6 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Transactional
 @org.springframework.transaction.annotation.Transactional
@@ -64,10 +70,20 @@ public class SecurityConfigaration {
         return new OkHttpClient();
     }
 
-    @Bean
-    public ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
-    }
+//    @Bean
+//    public ObjectMapper getObjectMapper() {
+//        return new ObjectMapper();
+//    }
+      @Bean
+      public ObjectMapper objectMapper() {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JavaTimeModule javaTimeModule = new JavaTimeModule();
+            // Configure the date time format as per your requirement
+            javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy:dd:MM HH:mm:ss")));
+            javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy:dd:MM HH:mm:ss")));
+            objectMapper.registerModule(javaTimeModule);
+            return objectMapper;
+      }
 
 //    @Bean
 //    public AcknowledgeResponse getAcknowledgeResponse() {

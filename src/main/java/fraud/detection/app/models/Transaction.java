@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -24,11 +25,13 @@ public class Transaction {
     private String Status;
     private double Debited;
     private double Credited;
+    @Column(nullable = false, updatable = false)
     private String receiverAccount;
     @Column(nullable = false, updatable = false)
     private String senderAccount;
     private String ReferenceCode;
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    @DateTimeFormat(pattern ="yyyy:dd:MM HH:mm:ss")
     private LocalDateTime transactionDate;
 }

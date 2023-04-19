@@ -61,7 +61,7 @@ if(checkedNumber.equals("Invalid phone number")){
     try {
         userRepository.save(user);
         var account = Account.builder()
-                .accountNumber(request.getMobileNumber())
+                .accountNumber(user.getMobileNumber())
                 .openedBy(user.getMobileNumber())
                 .accountBalance(0.55)
                 .balanceBefore(0.01)

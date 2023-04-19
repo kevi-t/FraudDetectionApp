@@ -1,15 +1,17 @@
 package fraud.detection.app.responses;
 
+import fraud.detection.app.models.Transaction;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UniversalResponse implements Serializable {
+public class UniversalResponse  {
 
     private String status;
     private String message;

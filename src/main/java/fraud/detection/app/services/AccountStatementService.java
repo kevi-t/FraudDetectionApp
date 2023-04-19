@@ -42,13 +42,15 @@ public class AccountStatementService {
 
     public UniversalResponse getAllUserTransactions(AccountStatementDTO request) {
 
+
         try {
 
             if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
+
                 try {
 
                     String account = request.getAccountNumber();
-                    List<Transaction> transactions = transactionRepository.findBySenderAccountOrderByTransactionDate(account);
+                    List<Transaction> transactions = transactionRepository.findBySenderAccount(account);
                     System.out.println(transactions);
 
                     return UniversalResponse.builder()
