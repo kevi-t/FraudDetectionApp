@@ -123,6 +123,15 @@ public class HelperUtility {
         }
     }
 
+    //Generating unique reference code
+    public static String referenceCodeGenerator(){
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString().toUpperCase().substring(0, 10).replaceAll("-", "A");
+        String referenceCode = "TUCN" + randomUUIDString;
+        return referenceCode;
+    }
+
+
     @SneakyThrows
     public static String getSecurityCredentials(String initiatorPassword) {
 
