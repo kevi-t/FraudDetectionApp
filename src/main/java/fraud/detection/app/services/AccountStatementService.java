@@ -14,6 +14,7 @@ import fraud.detection.app.utils.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class AccountStatementService {
     private final TwilioConfiguration twilioConfiguration;
     public UniversalResponse response;
     public final HelperUtility helperUtility;
-    String referenceCode = HelperUtility.referenceCodeGenerator();
+    String referenceCode = HelperUtility.getTransactionUniqueNumber();
 
     @Autowired
     public AccountStatementService(TransactionRepository transactionRepository,

@@ -2,6 +2,7 @@ package fraud.detection.app.controllers;
 
 import fraud.detection.app.dto.AccountStatementDTO;
 import fraud.detection.app.dto.TransactionResponse;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.AccountStatementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class AccountStatementController {
     }
 
     @GetMapping("/statement")
-    public List<TransactionResponse> getAllUserTransactions(@Valid @RequestBody AccountStatementDTO request){
+    public UniversalResponse getAllUserTransactions(@Valid @RequestBody AccountStatementDTO request){
 
             return accountStatementService.getAllUserTransactions(request);
 

@@ -20,8 +20,6 @@ public class CheckBalanceService {
     private  final TwilioConfiguration twilioConfiguration;
     public UniversalResponse response;
     public final HelperUtility helperUtility;
-    String referenceCode = HelperUtility.referenceCodeGenerator();
-
     @Autowired
     public CheckBalanceService(AccountRepository accountRepository,
                                TwilioConfiguration twilioConfiguration,
@@ -41,7 +39,7 @@ public class CheckBalanceService {
                     try {
                         Message.creator(new PhoneNumber(request.getAccountNumber()),
                                 new PhoneNumber(twilioConfiguration.getTrial_number()),
-                                referenceCode + "Confirmed Account balance. Ksh" + account.getAccountBalance()).create();
+                                helperUtility.getTransactionUniqueNumber() + "Confirmed Account balance. Ksh" + account.getAccountBalance()).create();
                     }
                     catch (Exception ex) {
                         System.out.println("Error While Sending Transaction Message" + ex);

@@ -25,7 +25,6 @@ public class SendMoneyService {
     public final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfig;
     private final TransactionRepository transactionRepository;
-    String referenceCode = HelperUtility.referenceCodeGenerator();
     public UniversalResponse sendMoney(SendMoneyDTO request){
         String Account= request.getSenderAccountNumber();
          System.out.println(Account);
@@ -67,7 +66,7 @@ public class SendMoneyService {
                                     var trans = TransObj.builder()
                                             .transactionAmount((float) request.getTransactionAmount())
                                             .transactionType("SEND MONEY")
-                                            .ReferenceCode(referenceCode)
+                                            .ReferenceCode(helperUtility.getTransactionUniqueNumber())
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
                                             .Debited(request.getTransactionAmount())
@@ -82,7 +81,7 @@ public class SendMoneyService {
                                     var trans = TransObj.builder()
                                             .transactionAmount((float) request.getTransactionAmount())
                                             .transactionType("SEND MONEY")
-                                            .ReferenceCode(referenceCode)
+                                            .ReferenceCode(helperUtility.getTransactionUniqueNumber())
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
                                             .Debited(request.getTransactionAmount())
@@ -174,7 +173,7 @@ public class SendMoneyService {
                 var trans = TransObj.builder()
                         .transactionAmount((float) request.getTransactionAmount())
                         .transactionType("sendMoney")
-                        .ReferenceCode(referenceCode)
+                        .ReferenceCode(helperUtility.getTransactionUniqueNumber())
                         .senderAccount(request.getSenderAccountNumber())
                         .receiverAccount(request.getReceiverAccountNumber())
                         .Debited(request.getTransactionAmount())
