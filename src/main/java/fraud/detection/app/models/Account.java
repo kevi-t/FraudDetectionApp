@@ -27,10 +27,4 @@ public class Account {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     private String accountNumber;
-
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "accountNumber", referencedColumnName = "mobileNumber")
-//    private User user;
-//    @Column(insertable=false, updatable=false)
-//    private  String accountNumber;
 }

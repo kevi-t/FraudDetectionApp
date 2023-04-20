@@ -1,6 +1,7 @@
 package fraud.detection.app.controllers;
 
 import fraud.detection.app.dto.WithdrawDTO;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.WithdrawService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class WithdrawController {
 
     private final WithdrawService withdrawService;
+
     @Autowired
     public WithdrawController( WithdrawService withdrawService) {
         this.withdrawService = withdrawService;
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<?> withdrawMoney(@Valid @RequestBody WithdrawDTO request ) {
+    public ResponseEntity<UniversalResponse> withdrawMoney(@Valid @RequestBody WithdrawDTO request ) {
         try{
             return ResponseEntity.ok(withdrawService.withdrawMoney(request));
         }

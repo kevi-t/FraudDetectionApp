@@ -1,60 +1,67 @@
 package fraud.detection.app.services;
 
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.SendMoneyDTO;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.TransactionRepository;
-import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.HelperUtility;
 import fraud.detection.app.utils.Logs;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
-@RequiredArgsConstructor
 @Service
 public class SendMoneyService {
+    
     public final Logs logs;
-    private  final UserRepository userRepository;
+
     public  UniversalResponse response;
     public final HelperUtility helperUtility;
     public final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfig;
     private final TransactionRepository transactionRepository;
     String referenceCode = HelperUtility.referenceCodeGenerator();
+
+    public SendMoneyService(Logs logs,
+                            HelperUtility helperUtility,
+                            AccountRepository accountRepository,
+                            TwilioConfiguration twilioConfig,
+                            TransactionRepository transactionRepository) {
+        this.logs = logs;
+        this.helperUtility = helperUtility;
+        this.accountRepository = accountRepository;
+        this.twilioConfig = twilioConfig;
+        this.transactionRepository = transactionRepository;
+    }
+
     public UniversalResponse sendMoney(SendMoneyDTO request){
-        String Account= request.getSenderAccountNumber();
-         System.out.println(Account);
 
         if (helperUtility.checkPin(request.getPin(), request.getSenderAccountNumber())){
             try{
+
                 if (helperUtility.checkAccount(request.getReceiverAccountNumber())){
-                    UniversalResponse response= UniversalResponse.builder()
-                            .message("The Mission Customer does not exist")
-                            .status("failed")
-                            .data(request)
+                    return UniversalResponse.builder()
+                            .message("The Mission customer does not exist")
+                            .status("1")
                             .build();
-                    return  response;
                 }
                 else {
-                    try{Account fromaccount=accountRepository.findByAccountNumber(request.getSenderAccountNumber());
+                    
+                    try {
+                        Account fromaccount=accountRepository.findByAccountNumber(request.getSenderAccountNumber());
                         double Balance= fromaccount.getAccountBalance();
                         double SendingAmount=request.getTransactionAmount();
-                        System.out.println(Balance);
-                        System.out.println(SendingAmount);
 
                         if(Balance> SendingAmount){
                             double FromBalance =Balance- SendingAmount;
-                            double ToBalalnce=Balance+ SendingAmount;
-                            System.out.println(FromBalance);
-                            System.out.println(ToBalalnce);
+                            double ToBalance=Balance+ SendingAmount;
+                            
                             try {
                                 Account Toaccount = accountRepository.findByAccountNumber(request.getReceiverAccountNumber());
-                                Toaccount.setAccountBalance(ToBalalnce);
+                                Toaccount.setAccountBalance(ToBalance);
                                 accountRepository.save(Toaccount);
                                 Account FromAccount = accountRepository.findByAccountNumber(request.getSenderAccountNumber());
                                 FromAccount.setAccountBalance(FromBalance);
@@ -63,140 +70,109 @@ public class SendMoneyService {
                                 //TODO: Implement code to Insert into transaction Table here
 
                                 try {
-                                    Transaction TransObj = new Transaction();
-                                    var trans = TransObj.builder()
-                                            .transactionAmount((float) request.getTransactionAmount())
+
+                                    Transaction trans = Transaction.builder()
+                                            .transactionAmount(request.getTransactionAmount())
                                             .transactionType("SEND MONEY")
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
                                             .Debited(request.getTransactionAmount())
                                             .Credited(request.getTransactionAmount())
-                                            .Status("success")
+                                            .Status("0")
                                             .build();
                                     transactionRepository.save(trans);
                                 }
                                 catch (Exception ex){
                                     logs.log(ex.getMessage());
-                                    Transaction TransObj = new Transaction();
-                                    var trans = TransObj.builder()
-                                            .transactionAmount((float) request.getTransactionAmount())
+                                    Transaction trans = Transaction.builder()
+                                            .transactionAmount(request.getTransactionAmount())
                                             .transactionType("SEND MONEY")
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
                                             .Debited(request.getTransactionAmount())
                                             .Credited(request.getTransactionAmount())
-                                            .Status("failed")
+                                            .Status("1")
                                             .build();
                                     transactionRepository.save(trans);
                                 }
-//
-//                                //Sending messages to the sender and receiver
-//                                SendMoneyMessage sendMoneyMessage = new SendMoneyMessage();
-//                                var smsRequest = sendMoneyMessage.builder().senderPhoneNumber(request.getSenderAccountNumber())
-//                                                .receiverPhoneNumber(request.getReceiverAccountNumber())
-//                                                .message(request.getTransactionAmount())
-//                                                .build();
-//                                System.out.println(smsRequest);
-//                                try {
-//                                    Message twilioMessage = Message.creator(
-//                                                    new PhoneNumber(smsRequest.getReceiverPhoneNumber()),
-//                                                    new PhoneNumber(twilioConfig.getTrial_number()),
-//                                                    "You have recieved Ksh:"
-//                                                            + request.getTransactionAmount() + "From"
-//                                                            + request.getSenderAccountNumber()
-//                                                            + "You new Account Balance is Ksh:"
-//                                                            + ToBalalnce)
-//                                                    .create();
-//
-//                                    twilioMessage = Message.creator(
-//                                                    new PhoneNumber(smsRequest.getReceiverPhoneNumber()),
-//                                                    new PhoneNumber(twilioConfig.getTrial_number()),
-//                                                    "You have Sent Ksh:" + request.
-//                                                            getTransactionAmount() + "To"
-//                                                            + request.getReceiverAccountNumber()
-//                                                            + "You new Account Balance is Ksh:" + FromBalance)
-//                                                    .create();
-//                                }
-//                                catch (Exception ex) {
-//                                    System.out.println("Error While Sending Transaction Message" + ex);
-//                                    UniversalResponse response = UniversalResponse.builder()
-//                                            .message("Error While Sending Transaction Message")
-//                                            .status(0)
-//                                            .build();
-//                                    return response;
-//                                }
+
+                                try {
+                                    Message twilioMessage = Message.creator(
+                                                    new PhoneNumber(request.getReceiverAccountNumber()),
+                                                    new PhoneNumber(twilioConfig.getTrial_number()),
+                                                    "You have received Ksh:"
+                                                            + request.getTransactionAmount() + "From"
+                                                            + request.getSenderAccountNumber()
+                                                            + "You new Account Balance is Ksh:"
+                                                            + ToBalance)
+                                                    .create();
+
+                                    twilioMessage = Message.creator(
+                                                    new PhoneNumber(request.getSenderAccountNumber()),
+                                                    new PhoneNumber(twilioConfig.getTrial_number()),
+                                                    "You have Sent Ksh:" + request.
+                                                            getTransactionAmount() + "To"
+                                                            + request.getReceiverAccountNumber()
+                                                            + "You new Account Balance is Ksh:" + FromBalance)
+                                                    .create();
+                                }
+                                catch (Exception ex) {
+                                    System.out.println(ex);
+                                    return UniversalResponse.builder()
+                                            .message("Error while sending transaction message")
+                                            .status("0")
+                                            .build();
+                                }
                             }
                             catch(Exception ex){
-                                System.out.println("Transaction Error"+ex);
-                                UniversalResponse response= UniversalResponse.builder()
+                                System.out.println(ex);
+                                return  UniversalResponse.builder()
                                         .message("Transaction Error")
-                                        .status("failed")
-                                        .data(request)
+                                        .status("1")
                                         .build();
-                                return  response;
                             }
                         }
                         else{
-                            UUID uuid = UUID.randomUUID();
-                            String randomUUIDString = uuid.toString();
-                            String referenceCode = "TUCN" + randomUUIDString;
-                            Transaction TransObj = new Transaction();
-                            var trans = TransObj.builder()
-                                    .transactionAmount((float) request.getTransactionAmount())
-                                    .transactionType("sendMoney")
+
+                            Transaction trans = Transaction.builder()
+                                    .transactionAmount(request.getTransactionAmount())
+                                    .transactionType("SEND MONEY")
                                     .ReferenceCode(referenceCode)
                                     .senderAccount(request.getSenderAccountNumber())
                                     .receiverAccount(request.getReceiverAccountNumber())
                                     .Debited(request.getTransactionAmount())
                                     .Credited(request.getTransactionAmount())
-                                    .Status("failed not enough balance")
+                                    .Status("1")
                                     .build();
                             transactionRepository.save(trans);
 
-                            UniversalResponse response= UniversalResponse.builder()
-                                    .message("Insufficient funds")
-                                    .status("failed")
-                                    .data(request)
+                            return  UniversalResponse.builder()
+                                    .message("Transaction failed insufficient funds")
+                                    .status("1")
+                                    .data("Account balance"+fromaccount.getAccountBalance())
                                     .build();
-                            return  response;
                         }
                     }
                     catch (Exception ex){
                         logs.log(ex.getMessage());
                     }
-
                 }
             }
             catch (Exception ex){
-                Transaction TransObj = new Transaction();
-                var trans = TransObj.builder()
-                        .transactionAmount((float) request.getTransactionAmount())
-                        .transactionType("sendMoney")
-                        .ReferenceCode(referenceCode)
-                        .senderAccount(request.getSenderAccountNumber())
-                        .receiverAccount(request.getReceiverAccountNumber())
-                        .Debited(request.getTransactionAmount())
-                        .Credited(request.getTransactionAmount())
-                        .Status("failed")
-                        .build();
-                System.out.println("Transaction Failed"+ex);
-                UniversalResponse response= UniversalResponse.builder()
+                System.out.println(ex);
+                return  UniversalResponse.builder()
                         .message("Transaction Failed")
-                        .status("failed")
-                        .data(request)
+                        .status("1")
                         .build();
-                return  response;
             }
         }
         else {
-            UniversalResponse response= UniversalResponse.builder()
-                    .message("You Entered The wrong Pin!")
-                    .status("failed")
-                    .data(request)
+            return  UniversalResponse.builder()
+                    .message("Wrong pin!")
+                    .status("1")
                     .build();
-            return  response;
         }
 
         return response;

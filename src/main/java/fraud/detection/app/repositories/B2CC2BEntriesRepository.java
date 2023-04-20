@@ -13,5 +13,4 @@ public interface B2CC2BEntriesRepository extends JpaRepository<B2C_C2B_Entries, 
 
         B2C_C2B_Entries findByBillRefNumber(String billRefNumber);
 
-    }
-
+}

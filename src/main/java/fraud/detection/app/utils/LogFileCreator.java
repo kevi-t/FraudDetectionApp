@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 @Service
 public class LogFileCreator {
         public static void createLogFile(String error, String metadata) {
@@ -18,11 +19,10 @@ public class LogFileCreator {
                 BufferedWriter writer = new BufferedWriter(new FileWriter("error.log", true));
                 writer.write("Timestamp: " + timestamp + " | Error message: " + error + " | Metadata: " + metadata + "\n");
                 writer.close();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 System.out.println("Unable to create log file.");
                 e.printStackTrace();
             }
         }
-    }
-
-
+}

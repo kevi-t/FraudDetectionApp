@@ -30,18 +30,21 @@ public class TwilioSmsSender  {
     public void SendSms(SmsRequest smsRequest) {
         try {
             LocalDateTime Expiry = LocalDateTime.now().plusMinutes(5);
-            Message twilioMessage = Message.creator(new PhoneNumber(smsRequest.getPhoneNumber()),
+            Message.creator(new PhoneNumber(smsRequest.getPhoneNumber()),
                     new PhoneNumber(twilioConfig.getTrial_number()),
                     String.valueOf(smsRequest.getMessage())).create();
 
-            Otp otp1= Otp.builder().otpExpiryTime(Expiry).mobileNumber(smsRequest.getPhoneNumber()).otp(smsRequest.getMessage()).build();
+            Otp otp1= Otp.builder()
+                    .otpExpiryTime(Expiry)
+                    .mobileNumber(smsRequest.getPhoneNumber())
+                    .otp(smsRequest.getMessage())
+                    .build();
             otpRepository.save(otp1);
         }
         catch (Exception ex) {
-            System.out.println("Error While Sending OTP"+ex);
+            System.out.println("Error while sending OTP"+ex);
         }
         // LOGGER.info("Send sms {}" + smsRequest);;
     }
 }
         //TODO implement PhoneNumber Validator
-

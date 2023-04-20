@@ -2,9 +2,7 @@ package fraud.detection.app.services;
 
 
 import fraud.detection.app.dto.AuthenticationDTO;
-import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
-import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.JwtTokenUtil;
@@ -24,46 +22,43 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final AccountRepository accountRepository;
     public UniversalResponse response;
 
     public UniversalResponse login(AuthenticationDTO request) {
         try {
-             Authentication authentication = authenticationManager
-                     .authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPin()));
+             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPin()));
              SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (Exception ex){
-            UniversalResponse response= UniversalResponse.builder()
-                    .message("Username or pin Incorrect")
-                    .status("failed")
+            return  UniversalResponse.builder()
+                    .message("Username or pin incorrect")
+                    .status("1")
                     .data(request)
                     .build();
-            return  response;
         }
         try {
-            User user = userRepository.findUserBymobileNumber(request.getMobileNumber());
+            User user = userRepository.findUserByMobileNumber(request.getMobileNumber());
             if (user == null) {
-                UniversalResponse response= UniversalResponse.builder()
-                        .message("user not found please register")
-                        .status("failed")
+                return  UniversalResponse.builder()
+                        .message("User not found please register")
+                        .status("1")
                         .data(request)
                         .build();
-                return  response;
             }
             else {
                 try{
                     String jwt = jwtTokenUtil.createToken(request.getMobileNumber());
-                    Account accountNumber = accountRepository.findByAccountNumber(request.getMobileNumber());
-                    UniversalResponse response= UniversalResponse.builder()
+                    return UniversalResponse.builder()
                             .message("Login successful")
-                            .status("success")
+                            .status("0")
                             .data(jwt)
                             .build();
-                    return  response;
                 }
                 catch (Exception ex){
-                    System.out.println("Token failure");
+                    return UniversalResponse.builder()
+                            .message("Failed to generate token")
+                            .status("1")
+                            .build();
                 }
             }
         }

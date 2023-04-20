@@ -1,6 +1,5 @@
 package fraud.detection.app.utils;
 
-import fraud.detection.app.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,46 +19,50 @@ public class JwtTokenUtil {
 
     private final String secret = "SECRETKESECRETKEYYSECRETKESECRETKEYSECRETKEY";
     private final String jwtIssuer = "deliverance.com";  //https://passwordsgenerator.net/
-    private UserRepository userRepository;
-    // UserServiceImpl;
-    //private String secret = "9MFJ6Rt9pqzBynSV";
-    //SECRETKESECRETKEYYSECRETKESECRETKEYSECRETKEY
-    //private final String jwtSecret = "yBKrn1G0b7cY";
-
 
     private Key getSignInKey(){
         byte[] keyBytes= Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     public String extractUsername(String token){
         return extractClaim(token,Claims::getSubject);
     }
+
     public String extractOccupation(String token){
         return extractClaim(token,Claims::getAudience);
     }
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
+
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
     public String createToken(String mobileNumber) {
         Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder().setClaims(claims).setSubject(mobileNumber).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + 1800000)) //30 minutes
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(mobileNumber)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1800000)) //30 minutes
                 .setIssuedAt(new Date()).signWith(getSignInKey(),SignatureAlgorithm.HS256).compact();
     }
-    public Boolean validateToken(String token, UserDetails  userDetails) {
 
+    public Boolean validateToken(String token, UserDetails  userDetails) {
         final String username = extractUsername(token);
         if(isTokenExpired(token)) throw new RuntimeException("Token has expired");//throw a 401 error to show token has expired
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }
-

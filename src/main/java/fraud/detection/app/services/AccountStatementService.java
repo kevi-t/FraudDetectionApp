@@ -1,9 +1,5 @@
 package fraud.detection.app.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.AccountStatementDTO;
 import fraud.detection.app.models.Transaction;
@@ -13,7 +9,6 @@ import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +22,6 @@ public class AccountStatementService {
     private final TwilioConfiguration twilioConfiguration;
     public UniversalResponse response;
     public final HelperUtility helperUtility;
-    String referenceCode = HelperUtility.referenceCodeGenerator();
 
     @Autowired
     public AccountStatementService(TransactionRepository transactionRepository,
@@ -42,34 +36,30 @@ public class AccountStatementService {
 
     public UniversalResponse getAllUserTransactions(AccountStatementDTO request) {
 
-
         try {
-
             if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
 
                 try {
-
                     String account = request.getAccountNumber();
-                    List<Transaction> transactions = transactionRepository.findBySenderAccount(account);
-                    System.out.println(transactions);
+                    List<Transaction> transactions = transactionRepository.findBySenderAccountOrReceiverAccount(account,account);
 
                     return UniversalResponse.builder()
                             .message("Request Successful")
                             .data(transactions)
-                            .status("success")
+                            .status("0")
                             .build();
                 }
                 catch (Exception ex) {
                     return UniversalResponse.builder()
                             .message("Request Processing Error")
-                            .status("failed")
+                            .status("1")
                             .build();
                 }
             }
             else {
                 return UniversalResponse.builder()
                         .message("Wrong pin!")
-                        .status("failed")
+                        .status("1")
                         .build();
             }
         }
