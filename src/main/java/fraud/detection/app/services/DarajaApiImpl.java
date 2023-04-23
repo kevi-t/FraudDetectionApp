@@ -180,6 +180,7 @@ public class DarajaApiImpl  implements DarajaApi{
                             .Credited(internalStkPushRequest.getAmount())
                             .receiverAccount(internalStkPushRequest.getPhoneNumber())
                             .senderAccount(internalStkPushRequest.getPhoneNumber())
+                            .Status("0")
                             .build();
                 transactionRepository.save(trans);
 

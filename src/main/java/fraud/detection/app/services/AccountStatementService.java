@@ -3,7 +3,6 @@ package fraud.detection.app.services;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.AccountStatementDTO;
 import fraud.detection.app.models.Transaction;
-import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.HelperUtility;
@@ -18,18 +17,15 @@ import java.util.List;
 public class AccountStatementService {
 
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfiguration;
     public UniversalResponse response;
     public final HelperUtility helperUtility;
 
     @Autowired
     public AccountStatementService(TransactionRepository transactionRepository,
-                                   AccountRepository accountRepository,
                                    TwilioConfiguration twilioConfiguration,
                                    HelperUtility helperUtility) {
         this.transactionRepository = transactionRepository;
-        this.accountRepository = accountRepository;
         this.twilioConfiguration = twilioConfiguration;
         this.helperUtility = helperUtility;
     }

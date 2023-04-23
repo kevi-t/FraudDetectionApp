@@ -92,9 +92,7 @@ public class RegistrationService {
                                 .status("1")
                                 .build();
                     }
-
                 }
-
             }
             else {
                 return UniversalResponse.builder()

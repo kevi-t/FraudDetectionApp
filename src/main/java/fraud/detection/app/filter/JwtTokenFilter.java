@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     public JwtTokenFilter(LogFileCreator logFileCreator
-            , fraud.detection.app.services.UserDetailsService userDetailsService
+            , UserDetailsService userDetailsService
             , JwtTokenUtil jwtTokenUtil) {
         this.logFileCreator = logFileCreator;
         UserDetailsService = userDetailsService;
