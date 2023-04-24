@@ -47,7 +47,6 @@ public class RegisterDTO {
     @Pattern(regexp = "[0-9\\-]+", message = "Please enter a valid number with optional dashes")
     private String permanentAddress;
     @NotEmpty(message = "This field 'currentAddress' should not be empty")
-    @Pattern(regexp = "[0-9\\-]+", message = "Please enter a valid number with optional dashes")
     private String currentAddress;
     @NotEmpty(message = "This field 'pinCode' should not be empty")
     @Pattern(regexp = "[0-9\\-]+", message = "Please enter a valid number with optional dashes")
@@ -61,7 +60,7 @@ public class RegisterDTO {
     @NotEmpty(message = "This field 'country' should not be empty")
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Only alphabetical characters are allowed in field country")
     private String country;
-
+//TODO Add area of resident
     public interface Create {
 
     }
