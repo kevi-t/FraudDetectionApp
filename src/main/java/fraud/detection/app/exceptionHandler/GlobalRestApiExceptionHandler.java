@@ -1,17 +1,13 @@
 package fraud.detection.app.exceptionHandler;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import fraud.detection.app.responses.UniversalResponse;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -19,16 +15,28 @@ import java.util.stream.Collectors;
 public class GlobalRestApiExceptionHandler {
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<Map<String, List<String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        public UniversalResponse handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
                 List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
-                int  code = ex.getBody().getStatus();
-                return new ResponseEntity<>(getErrorsMap(errors, Collections.singletonList(String.valueOf(code))), new HttpHeaders(),ex.getBody().getStatus());
+                String errorMessage = String.join(",", errors);
+                return UniversalResponse.builder()
+                        .message(errorMessage)
+                        .status("1")
+                        .build();
         }
 
-        private Map<String, List<String>> getErrorsMap(List<String> errors,List<String> code) {
-                Map<String, List<String>> errorResponse = new HashMap<>();
-                errorResponse.put("errors", errors);
-                errorResponse.put("code", code);
-                return errorResponse;
-        }
+//    @ExceptionHandler(ConstraintViolationException.class)
+//    public UniversalResponse handleConstraintViolationException(ConstraintViolationException ex) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getConstraintViolations().forEach(violation -> {
+//            String fieldName = violation.getPropertyPath().toString();
+//            String errorMessage = violation.getMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//        String errorMessage = String.join(",", errors.values());
+//        return UniversalResponse.builder()
+//                .message(errorMessage)
+//                .data(null)
+//                .status("1")
+//                .build();
+//    }
 }
