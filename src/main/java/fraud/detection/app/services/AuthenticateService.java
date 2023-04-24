@@ -2,7 +2,6 @@ package fraud.detection.app.services;
 
 
 import fraud.detection.app.dto.AuthenticationDTO;
-import fraud.detection.app.models.User;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.JwtTokenUtil;
@@ -27,46 +26,46 @@ public class AuthenticateService {
     public UniversalResponse response;
 
     public UniversalResponse login(AuthenticationDTO request) {
-        String checkedNumber = checkPhoneNumber(request.getMobileNumber());
+
         try {
-             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(checkedNumber, request.getPin()));
-             SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        catch (Exception ex){
-            return  UniversalResponse.builder()
-                    .message("Username or pin incorrect")
-                    .status("1")
-                    .build();
-        }
-        try {
-            User user = userRepository.findUserByMobileNumber(checkedNumber);
-            if (user == null) {
+            String checkedNumber = checkPhoneNumber(request.getMobileNumber());
+            if (userRepository.findUserByMobileNumber(checkedNumber)==null){
                 return  UniversalResponse.builder()
                         .message("User not found please register")
                         .status("1")
                         .build();
             }
             else {
-                try{
-                    String jwt = jwtTokenUtil.createToken(checkedNumber);
-                    return UniversalResponse.builder()
+                try {
+                    Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(checkedNumber, request.getPin()));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    try{
+                        String jwt = jwtTokenUtil.createToken(checkedNumber);
+                        return UniversalResponse.builder()
                             .message("Login successful")
                             .status("0")
                             .data(jwt)
                             .build();
-                }
-                catch (Exception ex){
+                    }
+                    catch (Exception ex){
                     return UniversalResponse.builder()
                             .message("Failed to generate token")
+                            .status("1")
+                            .build();
+                    }
+                }
+                catch (Exception ex){
+                    System.out.println(ex);
+                    return  UniversalResponse.builder()
+                            .message("Username or pin incorrect")
                             .status("1")
                             .build();
                 }
             }
         }
         catch (Exception ex){
-            ex.printStackTrace();
+            System.out.println(ex);
         }
         return response;
     }
-
 }
