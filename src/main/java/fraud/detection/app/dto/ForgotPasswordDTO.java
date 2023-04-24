@@ -1,5 +1,8 @@
 package fraud.detection.app.dto;
 
+import lombok.Data;
+
+@Data
 public class ForgotPasswordDTO {
-    //TO be implemented
+    private String phoneNumber;
 }

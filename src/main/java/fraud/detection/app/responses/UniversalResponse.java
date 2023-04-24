@@ -2,6 +2,7 @@ package fraud.detection.app.responses;
 
 import fraud.detection.app.models.Transaction;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class UniversalResponse  {
 
     private String status;

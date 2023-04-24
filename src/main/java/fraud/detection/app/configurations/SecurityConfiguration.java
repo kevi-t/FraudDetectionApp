@@ -58,7 +58,7 @@ public class SecurityConfiguration {
                                 "/otp/send","/otp/verify",
                                 "/mobile-money/stk-deposit-request",
                                 "/mobile-money/token",
-                                "/fraud/app/withdraw").permitAll()
+                                "/fraud/app/withdraw", "/fraud/app/lipabill").permitAll()
                 .and()
                 .authorizeHttpRequests().requestMatchers
                         ("/api/auth//getusers").hasAuthority("Admin")

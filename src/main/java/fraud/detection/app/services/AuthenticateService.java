@@ -2,11 +2,11 @@ package fraud.detection.app.services;
 
 
 import fraud.detection.app.dto.AuthenticationDTO;
+import fraud.detection.app.dto.LoginResponse;
 import fraud.detection.app.models.User;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.JwtTokenUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,13 +18,21 @@ import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuthenticateService {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    public UniversalResponse response;
+    private final UniversalResponse universalResponseresponse;
+    private final LoginResponse loginResponse;
+
+    public AuthenticateService(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager, UserRepository userRepository, UniversalResponse universalResponseresponse, LoginResponse loginResponse) {
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.universalResponseresponse = universalResponseresponse;
+        this.loginResponse = loginResponse;
+    }
 
     public UniversalResponse login(AuthenticationDTO request) {
         String checkedNumber = checkPhoneNumber(request.getMobileNumber());
@@ -33,6 +41,7 @@ public class AuthenticateService {
              SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (Exception ex){
+            log.info("Username or pin incorrect");
             return  UniversalResponse.builder()
                     .message("Username or pin incorrect")
                     .status("1")
@@ -41,6 +50,7 @@ public class AuthenticateService {
         try {
             User user = userRepository.findUserByMobileNumber(checkedNumber);
             if (user == null) {
+                log.info("User not found please register");
                 return  UniversalResponse.builder()
                         .message("User not found please register")
                         .status("1")
@@ -49,24 +59,29 @@ public class AuthenticateService {
             else {
                 try{
                     String jwt = jwtTokenUtil.createToken(checkedNumber);
-                    return UniversalResponse.builder()
-                            .message("Login successful")
-                            .status("0")
-                            .data(jwt)
+                    loginResponse.setToken(jwt);
+                    loginResponse.setUserPhoneNumber(request.getMobileNumber());
+                    loginResponse.setUserEmail(user.getEmail().toString());
+                     return UniversalResponse.builder()
+                            .message("login sucessful")
+                            .status("1")
+                             .data(loginResponse)
                             .build();
                 }
                 catch (Exception ex){
+                    log.info("Failed to generate token"+ex);
                     return UniversalResponse.builder()
-                            .message("Failed to generate token")
+                            .message("Failed to generate token"+ex)
                             .status("1")
                             .build();
                 }
             }
         }
         catch (Exception ex){
+            log.info("Error while finding user"+ex);
             ex.printStackTrace();
         }
-        return response;
+        return universalResponseresponse;
     }
 
 }

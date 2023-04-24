@@ -4,6 +4,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.LipaBillDto;
+import fraud.detection.app.dto.LipaBillResponse;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
@@ -24,18 +25,20 @@ public class LipaBillService {
     private final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfiguration;
     private UniversalResponse response;
+    private final LipaBillResponse lipaBillResponse;
     String referenceCode = HelperUtility.referenceCodeGenerator();
 
     public LipaBillService(TransactionRepository transactionRepository
             , LogFileCreator logFileCreator
             , HelperUtility helperUtility
             , AccountRepository accountRepository
-            , TwilioConfiguration twilioConfiguration) {
+            , TwilioConfiguration twilioConfiguration, LipaBillResponse lipaBillResponse) {
         this.transactionRepository = transactionRepository;
         this.logFileCreator = logFileCreator;
         this.helperUtility = helperUtility;
         this.accountRepository = accountRepository;
         this.twilioConfiguration = twilioConfiguration;
+        this.lipaBillResponse = lipaBillResponse;
     }
 
     public UniversalResponse lipaBill(LipaBillDto request) {
@@ -68,6 +71,7 @@ public class LipaBillService {
                         .build();
                 transactionRepository.save(trans);
 
+
                 //sending message to the payee
                 try {
                     Message.creator(
@@ -81,6 +85,14 @@ public class LipaBillService {
                     System.out.println("Error While Sending Transaction Message" + ex);
                     log.info("Error While Sending Transaction Message ==>" + ex);
                 }
+                lipaBillResponse.setAmount(request.getAmount());
+                lipaBillResponse.setRecievedBy(request.getPayBillNo());
+                lipaBillResponse.setBalance(account.getAccountBalance());
+                return  UniversalResponse.builder()
+                        .message("Transaction Successful")
+                        .status("1")
+                        .data(lipaBillResponse)
+                        .build();
             }
             else {
 
@@ -98,7 +110,6 @@ public class LipaBillService {
                     .status("1")
                     .build();
         }
-        return response;
     }
 
 }
