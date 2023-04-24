@@ -20,6 +20,8 @@ public class CheckBalanceService {
     private  final TwilioConfiguration twilioConfiguration;
     public UniversalResponse response;
     public final HelperUtility helperUtility;
+    String referenceCode = HelperUtility.referenceCodeGenerator();
+
     @Autowired
     public CheckBalanceService(AccountRepository accountRepository,
                                TwilioConfiguration twilioConfiguration,
@@ -39,21 +41,35 @@ public class CheckBalanceService {
                     try {
                         Message.creator(new PhoneNumber(request.getAccountNumber()),
                                 new PhoneNumber(twilioConfiguration.getTrial_number()),
-                                helperUtility.getTransactionUniqueNumber() + "Confirmed Account balance. Ksh" + account.getAccountBalance()).create();
+                                referenceCode + "Confirmed Account balance. Ksh"
+                                        + account.getAccountBalance()).create();
                     }
                     catch (Exception ex) {
-                        System.out.println("Error While Sending Transaction Message" + ex);
-                        return UniversalResponse.builder().message("Error While Sending Transaction Message").status("failed").build();
+                        System.out.println("Error while sending transaction message" + ex);
+                        return UniversalResponse.builder()
+                                .message("Error while sending transaction message")
+                                .status("1")
+                                .build();
                     }
-                    return UniversalResponse.builder().message("Balance request successful account balance:" + account.getAccountBalance()).build();
+                    return UniversalResponse.builder()
+                            .message("request successful")
+                            .status("0")
+                            .data(account.getAccountBalance())
+                            .build();
 
                 }
                 catch (Exception ex){
-                    return UniversalResponse.builder().message("Transaction Error").status("failed").build();
+                    return UniversalResponse.builder()
+                            .message("Transaction Error")
+                            .status("1")
+                            .build();
                 }
             }
             else {
-                return UniversalResponse.builder().message("Wrong pin!").status("failed").build();
+                return UniversalResponse.builder()
+                        .message("Wrong pin!")
+                        .status("1")
+                        .build();
             }
         }
         catch (Exception e) {

@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-
 @RestController
 @Transactional
 @RequiredArgsConstructor
@@ -66,7 +65,7 @@ public class OtpController {
                 }
             }
             else {
-                return UniversalResponse.builder().message("Invalid PhoneNumber").status("failed").build();
+                return UniversalResponse.builder().message("Invalid PhoneNumber").status("1").build();
             }
         }
         catch (Exception ex){
@@ -93,22 +92,22 @@ public class OtpController {
             System.out.println((request.getOtp()));
 
             if (SavedOTP!= (request.getOtp())){
-                return UniversalResponse.builder().message("You Entered the wrong OTP").status("failed").build();
+                return UniversalResponse.builder().message("You Entered the wrong OTP").status("1").build();
             }
             if (minutes==5) {
-                UniversalResponse response= UniversalResponse.builder().message("OTP verified").status("failed").build();
+                UniversalResponse response= UniversalResponse.builder().message("OTP verified").status("1").build();
                 //TODO: Add a method to delete the otp field in db here
                 otpRepository.deleteByMobileNumber(request.getPhoneNumber());
                 return response;
             }
             else if (minutes<5){
-                UniversalResponse response= UniversalResponse.builder().message("OTP Verified").status("failed").build();
+                UniversalResponse response= UniversalResponse.builder().message("OTP Verified").status("1").build();
                 //TODO: Add a method to delete the otp field in db here
                 otpRepository.deleteByMobileNumber(request.getPhoneNumber());
                 return response;
             }
             else {
-                UniversalResponse response= UniversalResponse.builder().message("OTP as Expired").status("failed").build();
+                UniversalResponse response= UniversalResponse.builder().message("OTP as Expired").status("1").build();
                 try{
                     otpRepository.deleteByMobileNumber(request.getPhoneNumber());
                 }
@@ -120,7 +119,7 @@ public class OtpController {
             }
         }
         else {
-            return UniversalResponse.builder().message("Username Does Not Exist").status("failed").build();
+            return UniversalResponse.builder().message("Username Does Not Exist").status("1").build();
         }
     }
 }

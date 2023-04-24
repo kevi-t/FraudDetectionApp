@@ -35,14 +35,18 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-@Slf4j
+
 @Service
+@Slf4j
 public class HelperUtility {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
 
-    public HelperUtility(UserRepository userRepository, PasswordEncoder passwordEncoder, AccountRepository accountRepository) {
+    public HelperUtility(UserRepository userRepository,
+                         PasswordEncoder passwordEncoder,
+                         AccountRepository accountRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.accountRepository = accountRepository;
@@ -52,10 +56,13 @@ public class HelperUtility {
      * @param value the value to be converted to a base64 string
      * @return returns base64String
      */
+
+
     public static String toBase64String(String value) {
         byte[] data = value.getBytes(StandardCharsets.ISO_8859_1);
         return Base64.getEncoder().encodeToString(data);
     }
+
     public static String toJson(Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
@@ -64,15 +71,18 @@ public class HelperUtility {
             return null;
         }
     }
+
     public static String getTransactionUniqueNumber() {
         RandomStringGenerator stringGenerator = new RandomStringGenerator.Builder()
                 .withinRange('0', 'z')
                 .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
                 .build();
+
         String transactionNumber=stringGenerator.generate(12).toUpperCase();
         log.info(String.format("Transaction Number: %s", transactionNumber));
         return transactionNumber;
     }
+
     public static String getStkPushPassword(String shortCode, String passKey, String timestamp) {
         String concatenatedString = String.format("%s%s%s", shortCode, passKey, timestamp);
         return toBase64String(concatenatedString);
@@ -83,10 +93,8 @@ public class HelperUtility {
         return dateFormat.format(new Date());
     }
 
-
-
     public Boolean checkPin(String pin,String account){
-        User user=userRepository.findUserBymobileNumber(account);
+        User user=userRepository.findUserByMobileNumber(account);
         String dbPin= user.getPin();
         if (passwordEncoder.matches(pin, dbPin)){
             return true;
@@ -95,6 +103,7 @@ public class HelperUtility {
             return false;
         }
     }
+
     public Boolean checkAccount(String account){
         if(accountRepository.findByAccountNumber(account)==null){
             return true;
@@ -102,17 +111,26 @@ public class HelperUtility {
         else {
             return false;
         }
-
     }
+
     public Boolean checkAccountBalance(String accountNo,double transactionAmount){
-     Account account= accountRepository.findByAccountNumber(accountNo);
-     if (account.getAccountBalance()>transactionAmount){
-         return true;
-     }else {
-         return false;
-     }
-
+        Account account= accountRepository.findByAccountNumber(accountNo);
+        if (account.getAccountBalance()>transactionAmount){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
+
+    //Generating unique reference code
+    public static String referenceCodeGenerator(){
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString().toUpperCase().substring(0, 10).replaceAll("-", "A");
+        String referenceCode = "TUCN" + randomUUIDString;
+        return referenceCode;
+    }
+
 
     @SneakyThrows
     public static String getSecurityCredentials(String initiatorPassword) {
@@ -133,42 +151,43 @@ public class HelperUtility {
 
             byte[] cipherText = cipher.doFinal(input);
             String cipherText2 = cipherText.toString();
+
             // Convert the resulting encrypted byte array into a string using base64 encoding
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                String encryptedPassword = passwordEncoder.encode(cipherText2).trim();
+            String encryptedPassword = passwordEncoder.encode(cipherText2).trim();
 
             return encryptedPassword;
-        } catch (NoSuchAlgorithmException | CertificateException | InvalidKeyException | NoSuchPaddingException |
+        }
+        catch (NoSuchAlgorithmException | CertificateException | InvalidKeyException | NoSuchPaddingException |
                  IllegalBlockSizeException | BadPaddingException | NoSuchProviderException | FileNotFoundException e) {
             log.error(String.format("Error generating security credentials ->%s", e.getLocalizedMessage()));
             throw e;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-
-
     public static String checkPhoneNumber(String phoneNumber) {
-        if (phoneNumber.matches("^((\\+)?254|07|01)\\d{8}$")) {
+        if (phoneNumber.matches("^((\\+)?2547|2541|07|01)\\d{8}$")) {
             if (phoneNumber.startsWith("+254")) {
                 return phoneNumber.substring(1);
-            } else if (phoneNumber.startsWith("01")) {
+            }
+            else if (phoneNumber.startsWith("01")) {
                 return "2541" + phoneNumber.substring(2);
-            } else if (phoneNumber.startsWith("07")) {
+            }
+            else if (phoneNumber.startsWith("07")) {
                 return "2547" + phoneNumber.substring(2);
-            } else {
+            }
+            else {
                 return phoneNumber;
             }
-        } else {
+        }
+        else {
             return "Invalid phone number";
         }
     }
 
 
-
-
 }
-
-

@@ -1,6 +1,7 @@
 package fraud.detection.app.controllers;
 
 import fraud.detection.app.dto.SendMoneyDTO;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.SendMoneyService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class SendMoneyController {
 
     private final SendMoneyService sendMoneyService;
+
     @Autowired
     public SendMoneyController(SendMoneyService sendMoneyService) {
         this.sendMoneyService = sendMoneyService;
     }
 
     @PostMapping("/sendmoney")
-    public ResponseEntity<?> sendMoney(@Valid @RequestBody SendMoneyDTO request) {
-       // System.out.println(request.getReceiverAccountNumber());
+    public ResponseEntity<UniversalResponse> sendMoney(@Valid @RequestBody SendMoneyDTO request) {
         try{
-            //System.out.println(request.getReceiverAccountNumber());
-
             return ResponseEntity.ok(sendMoneyService.sendMoney(request));
         }
         catch (Exception ex){

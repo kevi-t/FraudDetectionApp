@@ -2,9 +2,7 @@ package fraud.detection.app.services;
 
 
 import fraud.detection.app.dto.AuthenticationDTO;
-import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
-import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.JwtTokenUtil;
@@ -16,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,46 +24,42 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final AccountRepository accountRepository;
     public UniversalResponse response;
 
     public UniversalResponse login(AuthenticationDTO request) {
+        String checkedNumber = checkPhoneNumber(request.getMobileNumber());
         try {
-             Authentication authentication = authenticationManager
-                     .authenticate(new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPin()));
+             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(checkedNumber, request.getPin()));
              SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         catch (Exception ex){
-            UniversalResponse response= UniversalResponse.builder()
-                    .message("Username or pin Incorrect")
-                    .status("failed")
-                    .data(request)
+            return  UniversalResponse.builder()
+                    .message("Username or pin incorrect")
+                    .status("1")
                     .build();
-            return  response;
         }
         try {
-            User user = userRepository.findUserBymobileNumber(request.getMobileNumber());
+            User user = userRepository.findUserByMobileNumber(checkedNumber);
             if (user == null) {
-                UniversalResponse response= UniversalResponse.builder()
-                        .message("user not found please register")
-                        .status("failed")
-                        .data(request)
+                return  UniversalResponse.builder()
+                        .message("User not found please register")
+                        .status("1")
                         .build();
-                return  response;
             }
             else {
                 try{
-                    String jwt = jwtTokenUtil.createToken(request.getMobileNumber());
-                    Account accountNumber = accountRepository.findByAccountNumber(request.getMobileNumber());
-                    UniversalResponse response= UniversalResponse.builder()
+                    String jwt = jwtTokenUtil.createToken(checkedNumber);
+                    return UniversalResponse.builder()
                             .message("Login successful")
-                            .status("success")
+                            .status("0")
                             .data(jwt)
                             .build();
-                    return  response;
                 }
                 catch (Exception ex){
-                    System.out.println("Token failure");
+                    return UniversalResponse.builder()
+                            .message("Failed to generate token")
+                            .status("1")
+                            .build();
                 }
             }
         }

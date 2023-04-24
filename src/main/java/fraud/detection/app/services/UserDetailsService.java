@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+
     private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String mobileNumber) throws UsernameNotFoundException {
-        return userRepository.findUserBymobileNumber(mobileNumber);
+        return userRepository.findUserByMobileNumber(mobileNumber);
     }
 }
