@@ -1,8 +1,6 @@
 package fraud.detection.app.services;
 
-import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.TransactionDTO;
-import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.TransactionRepository;
@@ -11,7 +9,6 @@ import fraud.detection.app.utils.HelperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

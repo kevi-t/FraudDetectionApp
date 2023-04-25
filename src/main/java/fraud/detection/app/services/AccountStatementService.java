@@ -1,7 +1,11 @@
 package fraud.detection.app.services;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.AccountStatementDTO;
+import fraud.detection.app.dto.FilteredTransactions;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.responses.UniversalResponse;
@@ -10,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,9 +44,33 @@ public class AccountStatementService {
                     String account = request.getAccountNumber();
                     List<Transaction> transactions = transactionRepository.findBySenderAccountOrReceiverAccount(account,account);
 
+                    // Create a new list to store filtered transactions
+                    List<FilteredTransactions> filteredTransactions = new ArrayList<>();
+
+                    // Loop through the transactions and extract the desired fields
+                    for (Transaction transaction : transactions) {
+                        FilteredTransactions filteredTransaction = new FilteredTransactions();
+                        if (transaction.getTransactionType()!=null){
+                            filteredTransaction.setTransactionType(transaction.getTransactionType());
+                        }
+                        if (transaction.getReceiverAccount()!=null){
+                            filteredTransaction.setReceiverAccount(transaction.getReceiverAccount());
+                        }
+                        if (transaction.getReferenceCode()!=null){
+                            filteredTransaction.setReferenceCode(transaction.getReferenceCode());
+                        }
+                        if (transaction.getTransactionDate()!=null){
+                            filteredTransaction.setTransactionDate(transaction.getTransactionDate());
+                        }
+                        filteredTransaction.setTransactionAmount(transaction.getTransactionAmount());
+
+                        // Add the filtered transaction to the filteredTransactions list
+                        filteredTransactions.add(filteredTransaction);
+                    }
+
                     return UniversalResponse.builder()
                             .message("Request Successful")
-                            .data(transactions)
+                            .data(filteredTransactions)
                             .status("0")
                             .build();
                 }
