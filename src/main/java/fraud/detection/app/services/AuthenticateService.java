@@ -25,32 +25,27 @@ public class AuthenticateService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final UniversalResponse universalResponseresponse;
+    private final UniversalResponse response;
     private final LoginResponse loginResponse;
     private final AccountRepository accountRepository;
 
-    public AuthenticateService(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager, UserRepository userRepository, UniversalResponse universalResponseresponse, LoginResponse loginResponse, AccountRepository accountRepository) {
+    public AuthenticateService(JwtTokenUtil jwtTokenUtil,
+                               AuthenticationManager authenticationManager,
+                               UserRepository userRepository,
+                               UniversalResponse response,
+                               LoginResponse loginResponse,
+                               AccountRepository accountRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
-        this.universalResponseresponse = universalResponseresponse;
+        this.response = response;
         this.loginResponse = loginResponse;
         this.accountRepository = accountRepository;
     }
 
     public UniversalResponse login(AuthenticationDTO request) {
+
         String checkedNumber = checkPhoneNumber(request.getMobileNumber());
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(checkedNumber, request.getPin()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        catch (Exception ex){
-            log.info("Username or pin incorrect");
-            return  UniversalResponse.builder()
-                    .message("Username or pin incorrect")
-                    .status("1")
-                    .build();
-        }
         try {
             User user = userRepository.findUserByMobileNumber(checkedNumber);
             if (user == null) {
@@ -61,24 +56,37 @@ public class AuthenticateService {
                         .build();
             }
             else {
-                try{
-                    Account account=accountRepository.findByAccountNumber(checkedNumber);
-                    String jwt = jwtTokenUtil.createToken(checkedNumber);
-                    loginResponse.setToken(jwt);
-                    loginResponse.setUserPhoneNumber(request.getMobileNumber());
-                    loginResponse.setUserName(user.getFirstName().toString());
-                    loginResponse.setBalance(account.getAccountBalance());
-                    log.info("login sucessful");
-                    return UniversalResponse.builder()
-                            .message("login sucessful")
-                            .status("1")
-                            .data(loginResponse)
-                            .build();
+
+                try {
+                    Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(checkedNumber, request.getPin()));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    try{
+                        Account account=accountRepository.findByAccountNumber(checkedNumber);
+                        String jwt = jwtTokenUtil.createToken(checkedNumber);
+                        loginResponse.setToken(jwt);
+                        loginResponse.setUserPhoneNumber(request.getMobileNumber());
+                        loginResponse.setUserName(user.getFirstName().toString());
+                        loginResponse.setBalance(account.getAccountBalance());
+                        log.info("login successful");
+                        return UniversalResponse.builder()
+                                .message("login successful")
+                                .status("1")
+                                .data(loginResponse)
+                                .build();
+                    }
+                    catch (Exception ex){
+                        log.info("Failed to generate token"+ex);
+                        return UniversalResponse.builder()
+                                .message("Failed to generate token"+ex)
+                                .status("1")
+                                .build();
+                    }
                 }
                 catch (Exception ex){
-                    log.info("Failed to generate token"+ex);
-                    return UniversalResponse.builder()
-                            .message("Failed to generate token"+ex)
+                    log.info("Username or pin incorrect");
+                    return  UniversalResponse.builder()
+                            .message("Username or pin incorrect")
                             .status("1")
                             .build();
                 }
@@ -88,7 +96,7 @@ public class AuthenticateService {
             log.info("Error while finding user"+ex);
             ex.printStackTrace();
         }
-        return universalResponseresponse;
+        return response;
     }
 
 }
