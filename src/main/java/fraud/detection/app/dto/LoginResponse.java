@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class LoginResponse {
    private String token;
     private String userPhoneNumber;
-    private  String userEmail;
+    private  String userName;
+    private double balance;
 
 }

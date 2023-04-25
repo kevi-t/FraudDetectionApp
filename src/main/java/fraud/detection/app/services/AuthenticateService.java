@@ -3,7 +3,9 @@ package fraud.detection.app.services;
 
 import fraud.detection.app.dto.AuthenticationDTO;
 import fraud.detection.app.dto.LoginResponse;
+import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
+import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.UserRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.JwtTokenUtil;
@@ -25,13 +27,15 @@ public class AuthenticateService {
     private final UserRepository userRepository;
     private final UniversalResponse universalResponseresponse;
     private final LoginResponse loginResponse;
+    private final AccountRepository accountRepository;
 
-    public AuthenticateService(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager, UserRepository userRepository, UniversalResponse universalResponseresponse, LoginResponse loginResponse) {
+    public AuthenticateService(JwtTokenUtil jwtTokenUtil, AuthenticationManager authenticationManager, UserRepository userRepository, UniversalResponse universalResponseresponse, LoginResponse loginResponse, AccountRepository accountRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.universalResponseresponse = universalResponseresponse;
         this.loginResponse = loginResponse;
+        this.accountRepository = accountRepository;
     }
 
     public UniversalResponse login(AuthenticationDTO request) {
@@ -58,10 +62,13 @@ public class AuthenticateService {
             }
             else {
                 try{
+                    Account account=accountRepository.findByAccountNumber(checkedNumber);
                     String jwt = jwtTokenUtil.createToken(checkedNumber);
                     loginResponse.setToken(jwt);
                     loginResponse.setUserPhoneNumber(request.getMobileNumber());
-                    loginResponse.setUserEmail(user.getEmail().toString());
+                    loginResponse.setUserName(user.getFirstName().toString());
+                    loginResponse.setBalance(account.getAccountBalance());
+                    log.info("login sucessful");
                     return UniversalResponse.builder()
                             .message("login sucessful")
                             .status("1")

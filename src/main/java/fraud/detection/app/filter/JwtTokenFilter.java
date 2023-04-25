@@ -59,7 +59,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         else if (request.getServletPath().equals("/stk-deposit-request")){
             filterChain.doFilter(request, response);
         }
-        else if (request.getServletPath().equals("/fraud/app/lipabill")){
+        else if (request.getServletPath().equals("/otp/forgot/password")){
             filterChain.doFilter(request, response);
         }
         else {

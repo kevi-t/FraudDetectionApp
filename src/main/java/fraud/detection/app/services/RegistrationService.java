@@ -1,6 +1,6 @@
 package fraud.detection.app.services;
-
 import fraud.detection.app.dto.RegisterDTO;
+import fraud.detection.app.dto.RegistrationResponseDTO;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.User;
 import fraud.detection.app.repositories.AccountRepository;
@@ -18,6 +18,7 @@ import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 @RequiredArgsConstructor
 public class RegistrationService {
 
+private final RegistrationResponseDTO registrationResponseDTO;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
@@ -67,15 +68,16 @@ public class RegistrationService {
                             var account = Account.builder()
                                     .accountNumber(user.getMobileNumber())
                                     .openedBy(user.getMobileNumber())
-                                    .accountBalance(1000.55)
+                                    .accountBalance(0.00)
                                     .balanceBefore(0.00)
                                     .build();
                             accountRepository.save(account);
-
+                            registrationResponseDTO.setPhoneNumber(checkedNumber);
+                            log.info("User registered successfully");
                             return UniversalResponse.builder()
                                     .message("User registered successfully")
-                                    .status("0")
-                                    .data(request)
+                                    .status("1")
+                                    .data(registrationResponseDTO)
                                     .build();
                         }
                         catch (Exception ex) {
