@@ -4,6 +4,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.SendMoneyDTO;
+import fraud.detection.app.dto.SendMoneyResponseDTO;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
@@ -23,18 +24,20 @@ public class SendMoneyService {
     public final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfig;
     private final TransactionRepository transactionRepository;
+    private final SendMoneyResponseDTO sendMoneyResponseDTO;
     String referenceCode = HelperUtility.referenceCodeGenerator();
 
     public SendMoneyService(Logs logs,
                             HelperUtility helperUtility,
                             AccountRepository accountRepository,
                             TwilioConfiguration twilioConfig,
-                            TransactionRepository transactionRepository) {
+                            TransactionRepository transactionRepository, SendMoneyResponseDTO sendMoneyResponseDTO) {
         this.logs = logs;
         this.helperUtility = helperUtility;
         this.accountRepository = accountRepository;
         this.twilioConfig = twilioConfig;
         this.transactionRepository = transactionRepository;
+        this.sendMoneyResponseDTO = sendMoneyResponseDTO;
     }
 
     public UniversalResponse sendMoney(SendMoneyDTO request){
@@ -82,6 +85,13 @@ public class SendMoneyService {
                                             .Status("0")
                                             .build();
                                     transactionRepository.save(trans);
+                                    sendMoneyResponseDTO.setTransactionAmount(request.getTransactionAmount());
+                                    sendMoneyResponseDTO.setReceiverAccountNumber(request.getReceiverAccountNumber());
+                                    return UniversalResponse.builder()
+                                            .message("Transaction successful")
+                                            .status("1")
+                                            .data(sendMoneyResponseDTO)
+                                            .build();
                                 }
                                 catch (Exception ex){
                                     logs.log(ex.getMessage());
