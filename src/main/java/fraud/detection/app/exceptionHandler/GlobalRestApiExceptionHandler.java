@@ -24,19 +24,4 @@ public class GlobalRestApiExceptionHandler {
                         .build();
         }
 
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    public UniversalResponse handleConstraintViolationException(ConstraintViolationException ex) {
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getConstraintViolations().forEach(violation -> {
-//            String fieldName = violation.getPropertyPath().toString();
-//            String errorMessage = violation.getMessage();
-//            errors.put(fieldName, errorMessage);
-//        });
-//        String errorMessage = String.join(",", errors.values());
-//        return UniversalResponse.builder()
-//                .message(errorMessage)
-//                .data(null)
-//                .status("1")
-//                .build();
-//    }
 }
