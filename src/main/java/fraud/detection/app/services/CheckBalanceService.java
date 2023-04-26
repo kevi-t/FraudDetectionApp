@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @Slf4j
 public class CheckBalanceService {
@@ -38,23 +40,27 @@ public class CheckBalanceService {
                 try{
 
                     Account account=accountRepository.findByAccountNumber(request.getAccountNumber());
-                    try {
-                        Message.creator(new PhoneNumber(request.getAccountNumber()),
-                                new PhoneNumber(twilioConfiguration.getTrial_number()),
-                                referenceCode + "Confirmed Account balance. Ksh"
-                                        + account.getAccountBalance()).create();
-                    }
-                    catch (Exception ex) {
-                        System.out.println("Error while sending transaction message" + ex);
-                        return UniversalResponse.builder()
-                                .message("Error while sending transaction message")
-                                .status("1")
-                                .build();
-                    }
+                    BigDecimal accountBalance = BigDecimal.valueOf(account.getAccountBalance()).setScale(2, BigDecimal.ROUND_HALF_UP);
+//                    try {
+//                        Message.creator(new PhoneNumber(request.getAccountNumber()),
+//                                new PhoneNumber(twilioConfiguration.getTrial_number()),
+//                                referenceCode + "Confirmed Account balance. Ksh"
+//                                        + accountBalance.create();
+//                    }
+//                    catch (Exception ex) {
+//                        System.out.println("Error while sending transaction message" + ex);
+//                        return UniversalResponse.builder()
+//                                .message("Error while sending transaction message")
+//                                .status("1")
+//                                .build();
+//                    }
+
+
+
                     return UniversalResponse.builder()
                             .message("request successful")
                             .status("0")
-                            .data(account.getAccountBalance())
+                            .data(accountBalance)
                             .build();
 
                 }

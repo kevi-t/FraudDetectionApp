@@ -14,8 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -44,6 +47,23 @@ public class AccountStatementService {
                     String account = request.getAccountNumber();
                     List<Transaction> transactions = transactionRepository.findBySenderAccountOrReceiverAccount(account,account);
 
+                    double totalIncome = 0.00;
+                    double totalExpense = 0.00;
+                    for (Transaction transaction : transactions) {
+                        if ("DEPOSIT".equalsIgnoreCase(transaction.getTransactionType())) {
+                            totalIncome += transaction.getTransactionAmount();
+                        }
+                        else {
+                            totalExpense += transaction.getTransactionAmount();
+                        }
+                    }
+                    BigDecimal income = BigDecimal.valueOf(totalIncome).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal expense = BigDecimal.valueOf(totalExpense).setScale(2, BigDecimal.ROUND_HALF_UP);
+
+                    Map<String, BigDecimal> result = new HashMap<>();
+                    result.put("totalIncome", income);
+                    result.put("totalExpense", expense);
+
                     // Create a new list to store filtered transactions
                     List<FilteredTransactions> filteredTransactions = new ArrayList<>();
 
@@ -70,6 +90,7 @@ public class AccountStatementService {
 
                     return UniversalResponse.builder()
                             .message("Request Successful")
+                            .data2(result)
                             .data(filteredTransactions)
                             .status("0")
                             .build();
