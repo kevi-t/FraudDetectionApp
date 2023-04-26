@@ -57,7 +57,7 @@ public class WithdrawService {
                             .receiverAccount(request.getAccountNumber())
                             .Debited(request.getTransactionAmount())
                             .Credited(request.getTransactionAmount())
-                            .Status("1")
+                            .status("failed")
                             .build();
                     transactionRepository.save(trans);
 
@@ -82,7 +82,7 @@ public class WithdrawService {
                                 .transactionType("WITHDRAW")
                                 .Debited(request.getTransactionAmount())
                                 .Credited(request.getTransactionAmount())
-                                .Status("0")
+                                .status("success")
                                 .build();
                         transactionRepository.save(transaction);
 
@@ -118,7 +118,7 @@ public class WithdrawService {
                                 .receiverAccount(request.getAccountNumber())
                                 .Debited(request.getTransactionAmount())
                                 .Credited(request.getTransactionAmount())
-                                .Status("1")
+                                .status("failed")
                                 .build();
                         transactionRepository.save(trans);
 

@@ -62,10 +62,10 @@ public class LipaBillService {
                 Transaction trans = Transaction.builder()
                         .Debited(request.getAmount())
                         .Credited(request.getAmount())
-                        .transactionType("LIPA BILL")
+                        .transactionType("LIPABILL")
                         .senderAccount(request.getPayerNo())
                         .receiverAccount(request.getPayBillNo())
-                        .Status("0")
+                        .status("success")
                         .transactionAmount(request.getAmount())
                         .ReferenceCode(referenceCode)
                         .build();
@@ -95,6 +95,19 @@ public class LipaBillService {
                         .build();
             }
             else {
+
+                //Inserting Into transaction Table
+                Transaction trans = Transaction.builder()
+                        .Debited(request.getAmount())
+                        .Credited(request.getAmount())
+                        .transactionType("LIPABILL")
+                        .senderAccount(request.getPayerNo())
+                        .receiverAccount(request.getPayBillNo())
+                        .status("failed")
+                        .transactionAmount(request.getAmount())
+                        .ReferenceCode(referenceCode)
+                        .build();
+                transactionRepository.save(trans);
 
                 return UniversalResponse.builder()
                         .message("Transaction failed insufficient funds")

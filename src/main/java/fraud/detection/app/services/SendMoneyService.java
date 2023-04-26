@@ -76,15 +76,16 @@ public class SendMoneyService {
 
                                     Transaction trans = Transaction.builder()
                                             .transactionAmount(request.getTransactionAmount())
-                                            .transactionType("SEND MONEY")
+                                            .transactionType("SENDMONEY")
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
                                             .Debited(request.getTransactionAmount())
                                             .Credited(request.getTransactionAmount())
-                                            .Status("0")
+                                            .status("success")
                                             .build();
                                     transactionRepository.save(trans);
+
                                     sendMoneyResponseDTO.setTransactionAmount(request.getTransactionAmount());
                                     sendMoneyResponseDTO.setReceiverAccountNumber(request.getReceiverAccountNumber());
                                     return UniversalResponse.builder()
@@ -95,15 +96,16 @@ public class SendMoneyService {
                                 }
                                 catch (Exception ex){
                                     logs.log(ex.getMessage());
+
                                     Transaction trans = Transaction.builder()
                                             .transactionAmount(request.getTransactionAmount())
-                                            .transactionType("SEND MONEY")
+                                            .transactionType("SENDMONEY")
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
                                             .Debited(request.getTransactionAmount())
                                             .Credited(request.getTransactionAmount())
-                                            .Status("1")
+                                            .status("failed")
                                             .build();
                                     transactionRepository.save(trans);
                                 }
@@ -132,7 +134,7 @@ public class SendMoneyService {
                                     System.out.println(ex);
                                     return UniversalResponse.builder()
                                             .message("Error while sending transaction message")
-                                            .status("0")
+                                            .status("1")
                                             .build();
                                 }
                             }
@@ -148,13 +150,13 @@ public class SendMoneyService {
 
                             Transaction trans = Transaction.builder()
                                     .transactionAmount(request.getTransactionAmount())
-                                    .transactionType("SEND MONEY")
+                                    .transactionType("SENDMONEY")
                                     .ReferenceCode(referenceCode)
                                     .senderAccount(request.getSenderAccountNumber())
                                     .receiverAccount(request.getReceiverAccountNumber())
                                     .Debited(request.getTransactionAmount())
                                     .Credited(request.getTransactionAmount())
-                                    .Status("1")
+                                    .status("failed")
                                     .build();
                             transactionRepository.save(trans);
 

@@ -37,8 +37,8 @@ public class TransactionService {
 
                 try {
                     String account = request.getAccountNumber();
+                    List<Transaction> transactions = transactionRepository.findBySenderAccountAndStatusOrReceiverAccountAndStatus(account,"success", account,"success");
 
-                    List<Transaction> transactions = transactionRepository.findBySenderAccountOrReceiverAccount(account, account);
                     double totalIncome = 0.00;
                     double totalExpense = 0.00;
                     for (Transaction transaction : transactions) {

@@ -1,8 +1,5 @@
 package fraud.detection.app.services;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fraud.detection.app.configurations.TwilioConfiguration;
 import fraud.detection.app.dto.AccountStatementDTO;
 import fraud.detection.app.dto.FilteredTransactions;
@@ -45,7 +42,7 @@ public class AccountStatementService {
 
                 try {
                     String account = request.getAccountNumber();
-                    List<Transaction> transactions = transactionRepository.findBySenderAccountOrReceiverAccount(account,account);
+                    List<Transaction> transactions = transactionRepository.findBySenderAccountAndStatusOrReceiverAccountAndStatus(account,"success",account,"success");
 
                     double totalIncome = 0.00;
                     double totalExpense = 0.00;
@@ -92,7 +89,7 @@ public class AccountStatementService {
                             .message("Request Successful")
                             .data2(result)
                             .data(filteredTransactions)
-                            .status("0")
+                            .status("1")
                             .build();
                 }
                 catch (Exception ex) {

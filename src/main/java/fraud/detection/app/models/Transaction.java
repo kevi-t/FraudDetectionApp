@@ -24,7 +24,7 @@ public class Transaction {
     @Column(scale = 2,nullable = false, updatable = false)
     private double transactionAmount;
     @Column(nullable = false, updatable = false)
-    private String Status;
+    private String status;
     private double Debited;
     private double Credited;
     @Column(nullable = false, updatable = false)
