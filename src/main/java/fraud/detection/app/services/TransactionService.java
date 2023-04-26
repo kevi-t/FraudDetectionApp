@@ -9,6 +9,7 @@ import fraud.detection.app.utils.HelperUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,15 +44,17 @@ public class TransactionService {
                     for (Transaction transaction : transactions) {
                         if ("DEPOSIT".equalsIgnoreCase(transaction.getTransactionType())) {
                             totalIncome += transaction.getTransactionAmount();
-
                         }
                         else {
                             totalExpense += transaction.getTransactionAmount();
                         }
                     }
-                    Map<String, Double> result = new HashMap<>();
-                    result.put("totalIncome", totalIncome);
-                    result.put("totalExpense", totalExpense);
+                    BigDecimal income = BigDecimal.valueOf(totalIncome).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal expense = BigDecimal.valueOf(totalExpense).setScale(2, BigDecimal.ROUND_HALF_UP);
+
+                    Map<String, BigDecimal> result = new HashMap<>();
+                    result.put("totalIncome", income);
+                    result.put("totalExpense", expense);
                     return UniversalResponse.builder()
                             .message("Request Successful")
                             .data(result)
@@ -79,35 +82,3 @@ public class TransactionService {
         return response;
     }
 }
-
-
-//    Account account=accountRepository.findByAccountNumber(request.getAccountNumber());
-//    public Map<String, Double> fetchTransactionsByAccount(Account accountNumber, String type) {
-//
-//        List<Transaction> transactions = null;
-//        if (accountNumber== transactionRepository.findByReceiverAccount())
-//        if ("RECEIVER".equalsIgnoreCase(type)) {
-//            transactions = transactionRepository.findByReceiverAccount(account);
-//        } else if ("SENDER".equalsIgnoreCase(type)) {
-//            transactions = transactionRepository.findBySenderAccount(account);
-//        } else {
-//            // Handle invalid type value
-//            throw new IllegalArgumentException("Invalid type value: " + type);
-//        }
-//
-//        double totalIncome=0.00;
-//        double totalExpense=0.00;
-//        for (Transaction transaction : transactions) {
-//            if ("DEPOSIT".equalsIgnoreCase(transaction.getTransactionType())) {
-//                totalIncome += transaction.getTransactionAmount();
-//            }
-//            else {
-//                totalExpense += transaction.getTransactionAmount();
-//            }
-//        }
-//        Map<String, Double> result = new HashMap<>();
-//        result.put("totalIncome", totalIncome);
-//        result.put("totalExpense", totalExpense);
-//        return result;
-//    }
-//}
