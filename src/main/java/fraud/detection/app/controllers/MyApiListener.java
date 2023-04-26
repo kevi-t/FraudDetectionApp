@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
             RestTemplate restTemplate = new RestTemplate();
             String apiUrl = "https://api.example.com/data";
             String response = restTemplate.getForObject(apiUrl, String.class);
-
 //            MyData myData = new MyData();
 //            myData.setToken(response.getData().getToken());
 //            myData.setUserPhoneNumber(response.getData().getUserPhoneNumber());
