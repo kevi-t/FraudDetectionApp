@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 public class UniversalResponse  {
     private String status;
     private String message;
-    private Object data2;
     private Object data;
 
     //TODO: implement how to display data to the client

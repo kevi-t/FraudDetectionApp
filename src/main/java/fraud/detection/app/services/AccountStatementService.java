@@ -87,7 +87,6 @@ public class AccountStatementService {
 
                     return UniversalResponse.builder()
                             .message("Request Successful")
-                            .data2(result)
                             .data(filteredTransactions)
                             .status("1")
                             .build();
