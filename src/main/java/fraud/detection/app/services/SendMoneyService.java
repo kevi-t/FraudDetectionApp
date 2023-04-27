@@ -20,7 +20,7 @@ import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 public class SendMoneyService {
     
     public final Logs logs;
-    private double fromUpdatedBalance;
+private double fromUpdatedBalance;
     private double toBalance;
     private double toUpdatedBalance;
     public  UniversalResponse response;
@@ -46,7 +46,7 @@ public class SendMoneyService {
 
     public UniversalResponse sendMoney(SendMoneyDTO request){
         String senderCheckedNumber = checkPhoneNumber(request.getSenderAccountNumber());
-        String receiverCheckedNumber = checkPhoneNumber(request.getReceiverAccountNumber());
+        String recieverCheckedNumber = checkPhoneNumber(request.getReceiverAccountNumber());
 
         if (helperUtility.checkPin(request.getPin(), senderCheckedNumber)){
             try{
@@ -61,7 +61,7 @@ public class SendMoneyService {
                     
                     try {
                         Account fromaccount=accountRepository.findByAccountNumber(senderCheckedNumber);
-                        Account toAccount=accountRepository.findByAccountNumber(receiverCheckedNumber);
+                        Account toAccount=accountRepository.findByAccountNumber(recieverCheckedNumber);
                         double fromBalance= fromaccount.getAccountBalance();
                         toBalance=toAccount.getAccountBalance();
                         double SendingAmount=request.getTransactionAmount();
@@ -72,7 +72,7 @@ public class SendMoneyService {
                             try {
                                 fromUpdatedBalance =fromBalance- SendingAmount;
                                 toUpdatedBalance=toBalance+ SendingAmount;
-                                Account toaccount = accountRepository.findByAccountNumber(receiverCheckedNumber);
+                                Account toaccount = accountRepository.findByAccountNumber(recieverCheckedNumber);
                                 toaccount.setAccountBalance(toUpdatedBalance);
                                 toaccount.setBalanceBefore(toBalance);
                                 accountRepository.save(toaccount);
@@ -90,13 +90,13 @@ public class SendMoneyService {
                                             .transactionType("SENDMONEY")
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(senderCheckedNumber)
-                                            .receiverAccount(receiverCheckedNumber)
+                                            .receiverAccount(recieverCheckedNumber)
                                             .status("success")
                                             .build();
                                     transactionRepository.save(trans);
 
                                     sendMoneyResponseDTO.setTransactionAmount(request.getTransactionAmount());
-                                    sendMoneyResponseDTO.setReceiverAccountNumber(receiverCheckedNumber);
+                                    sendMoneyResponseDTO.setReceiverAccountNumber(recieverCheckedNumber);
                                     return UniversalResponse.builder()
                                             .message("Transaction successful")
                                             .status("1")
@@ -111,7 +111,7 @@ public class SendMoneyService {
                                             .transactionType("SENDMONEY")
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(senderCheckedNumber)
-                                            .receiverAccount(receiverCheckedNumber)
+                                            .receiverAccount(recieverCheckedNumber)
                                             .status("failed")
                                             .build();
                                     transactionRepository.save(trans);
@@ -119,7 +119,7 @@ public class SendMoneyService {
 
                                 try {
                                     Message twilioMessage = Message.creator(
-                                                    new PhoneNumber(receiverCheckedNumber),
+                                                    new PhoneNumber(recieverCheckedNumber),
                                                     new PhoneNumber(twilioConfig.getTrial_number()),
                                                     "You have received Ksh:"
                                                             + request.getTransactionAmount() + "From"
@@ -133,7 +133,7 @@ public class SendMoneyService {
                                                     new PhoneNumber(twilioConfig.getTrial_number()),
                                                     "You have Sent Ksh:" + request.
                                                             getTransactionAmount() + "To"
-                                                            + receiverCheckedNumber
+                                                            + recieverCheckedNumber
                                                             + "You new Account Balance is Ksh:" + fromUpdatedBalance)
                                                     .create();
                                 }
@@ -160,7 +160,7 @@ public class SendMoneyService {
                                     .transactionType("SENDMONEY")
                                     .ReferenceCode(referenceCode)
                                     .senderAccount(senderCheckedNumber)
-                                    .receiverAccount(receiverCheckedNumber)
+                                    .receiverAccount(recieverCheckedNumber)
                                     .status("failed")
                                     .build();
                             transactionRepository.save(trans);
