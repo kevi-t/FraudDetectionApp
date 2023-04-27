@@ -99,6 +99,7 @@ public class AccountStatementService {
 
                     return AccountResponse.builder()
                             .message("Request Successful")
+                            .data2(result)
                             .data(filteredTransactions)
                             .status("1")
                             .build();
