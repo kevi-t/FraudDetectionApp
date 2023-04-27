@@ -50,10 +50,22 @@ public class AccountStatementService {
                         if ("DEPOSIT".equalsIgnoreCase(transaction.getTransactionType())) {
                             totalIncome += transaction.getTransactionAmount();
                         }
-                        else {
+                        else if ("SENDMONEY".equalsIgnoreCase(transaction.getTransactionType())) {
+                            if (account.equals(transaction.getReceiverAccount())){
+                                totalIncome += transaction.getTransactionAmount();
+                            }
+                            else if (account.equals(transaction.getSenderAccount())){
+                                totalExpense += transaction.getTransactionAmount();
+                            }
+                        }
+                        else if ("WITHDRAW".equalsIgnoreCase(transaction.getTransactionType())) {
+                            totalExpense += transaction.getTransactionAmount();
+                        }
+                        else if ("LIPABILL".equalsIgnoreCase(transaction.getTransactionType())) {
                             totalExpense += transaction.getTransactionAmount();
                         }
                     }
+
                     BigDecimal income = BigDecimal.valueOf(totalIncome).setScale(2, BigDecimal.ROUND_HALF_UP);
                     BigDecimal expense = BigDecimal.valueOf(totalExpense).setScale(2, BigDecimal.ROUND_HALF_UP);
 

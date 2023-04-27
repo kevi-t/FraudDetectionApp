@@ -80,8 +80,6 @@ public class SendMoneyService {
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
-                                            .Debited(request.getTransactionAmount())
-                                            .Credited(request.getTransactionAmount())
                                             .status("success")
                                             .build();
                                     transactionRepository.save(trans);
@@ -103,8 +101,6 @@ public class SendMoneyService {
                                             .ReferenceCode(referenceCode)
                                             .senderAccount(request.getSenderAccountNumber())
                                             .receiverAccount(request.getReceiverAccountNumber())
-                                            .Debited(request.getTransactionAmount())
-                                            .Credited(request.getTransactionAmount())
                                             .status("failed")
                                             .build();
                                     transactionRepository.save(trans);
@@ -154,8 +150,6 @@ public class SendMoneyService {
                                     .ReferenceCode(referenceCode)
                                     .senderAccount(request.getSenderAccountNumber())
                                     .receiverAccount(request.getReceiverAccountNumber())
-                                    .Debited(request.getTransactionAmount())
-                                    .Credited(request.getTransactionAmount())
                                     .status("failed")
                                     .build();
                             transactionRepository.save(trans);

@@ -55,8 +55,6 @@ public class WithdrawService {
                             .ReferenceCode(referenceCode)
                             .senderAccount(request.getAccountNumber())
                             .receiverAccount(request.getAccountNumber())
-                            .Debited(request.getTransactionAmount())
-                            .Credited(request.getTransactionAmount())
                             .status("failed")
                             .build();
                     transactionRepository.save(trans);
@@ -80,8 +78,6 @@ public class WithdrawService {
                                 .transactionAmount(request.getTransactionAmount())
                                 .ReferenceCode(referenceCode)
                                 .transactionType("WITHDRAW")
-                                .Debited(request.getTransactionAmount())
-                                .Credited(request.getTransactionAmount())
                                 .status("success")
                                 .build();
                         transactionRepository.save(transaction);
@@ -116,8 +112,6 @@ public class WithdrawService {
                                 .ReferenceCode(referenceCode)
                                 .senderAccount(request.getAccountNumber())
                                 .receiverAccount(request.getAccountNumber())
-                                .Debited(request.getTransactionAmount())
-                                .Credited(request.getTransactionAmount())
                                 .status("failed")
                                 .build();
                         transactionRepository.save(trans);

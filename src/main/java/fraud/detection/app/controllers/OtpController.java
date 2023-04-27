@@ -1,15 +1,15 @@
 package fraud.detection.app.controllers;
 
-import fraud.detection.app.dto.*;
-import fraud.detection.app.models.Otp;
+import fraud.detection.app.dto.ForgotPasswordDTO;
+import fraud.detection.app.dto.OtpDTO;
+import fraud.detection.app.dto.SendOtpDTO;
+import fraud.detection.app.dto.SmsRequest;
 import fraud.detection.app.repositories.OtpRepository;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.ForgotPasswordService;
 import fraud.detection.app.services.TwilioSmsSender;
-import fraud.detection.app.services.ValidationService;
 import fraud.detection.app.utils.HelperUtility;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Random;
 
 import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 
 @RestController
 @Transactional
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/otp")
 public class OtpController {
@@ -34,15 +31,14 @@ public class OtpController {
     private final TwilioSmsSender twilioSmsSender;
     private final OtpRepository otpRepository;
     public UniversalResponse response;
-    public ValidationService validationService;
     private final OtpDTO otpDTO;
- private final HelperUtility helperUtility;
- private final ForgotPasswordService forgotPasswordService;
+    private final HelperUtility helperUtility;
+    private final ForgotPasswordService forgotPasswordService;
+
     @Autowired
-    public OtpController(TwilioSmsSender twilioSmsSender, OtpRepository otpRepository, ValidationService validationService, OtpDTO otpDTO, HelperUtility helperUtility, ForgotPasswordService forgotPasswordService) {
+    public OtpController(TwilioSmsSender twilioSmsSender, OtpRepository otpRepository,OtpDTO otpDTO, HelperUtility helperUtility, ForgotPasswordService forgotPasswordService) {
         this.twilioSmsSender = twilioSmsSender;
         this.otpRepository = otpRepository;
-        this.validationService = validationService;
         this.otpDTO = otpDTO;
         this.helperUtility = helperUtility;
         this.forgotPasswordService = forgotPasswordService;

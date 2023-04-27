@@ -25,8 +25,6 @@ public class Transaction {
     private double transactionAmount;
     @Column(nullable = false, updatable = false)
     private String status;
-    private double Debited;
-    private double Credited;
     @Column(nullable = false, updatable = false)
     private String receiverAccount;
     @Column(nullable = false, updatable = false)

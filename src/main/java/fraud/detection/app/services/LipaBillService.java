@@ -60,8 +60,6 @@ public class LipaBillService {
 
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
-                        .Debited(request.getAmount())
-                        .Credited(request.getAmount())
                         .transactionType("LIPABILL")
                         .senderAccount(request.getPayerNo())
                         .receiverAccount(request.getPayBillNo())
@@ -98,8 +96,6 @@ public class LipaBillService {
 
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
-                        .Debited(request.getAmount())
-                        .Credited(request.getAmount())
                         .transactionType("LIPABILL")
                         .senderAccount(request.getPayerNo())
                         .receiverAccount(request.getPayBillNo())
