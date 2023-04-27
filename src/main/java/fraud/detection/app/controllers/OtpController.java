@@ -1,7 +1,7 @@
 package fraud.detection.app.controllers;
 
-import fraud.detection.app.dto.ForgotPasswordDTO;
 import fraud.detection.app.dto.OtpDTO;
+import fraud.detection.app.dto.ResetPasswordDTO;
 import fraud.detection.app.dto.SendOtpDTO;
 import fraud.detection.app.dto.SmsRequest;
 import fraud.detection.app.repositories.OtpRepository;
@@ -43,10 +43,10 @@ public class OtpController {
         this.helperUtility = helperUtility;
         this.forgotPasswordService = forgotPasswordService;
     }
-    @PostMapping("/forgot/password")
-    public ResponseEntity<UniversalResponse>forgotPassword(@RequestBody ForgotPasswordDTO request) {
+    @PostMapping("/forgot/password/reset")
+    public ResponseEntity<UniversalResponse>resetPassword(@RequestBody ResetPasswordDTO request) {
         System.out.println(request);
-        return ResponseEntity.ok(forgotPasswordService.forgotPassword(request));
+        return ResponseEntity.ok(forgotPasswordService.changePassword(request));
     }
     @PostMapping("/send")
     public UniversalResponse sendOtp(@RequestBody SendOtpDTO request) {
@@ -72,7 +72,7 @@ public class OtpController {
                     try{
                         twilioSmsSender.SendSms(smsRequest);
                         log.info("otp Sent");
-                        otpDTO.setOtp(otp);
+                        otpDTO.setOtp(String.valueOf(otp));
                         return UniversalResponse.builder().message("Success").status("1").data(otpDTO).build();
 
                     }
