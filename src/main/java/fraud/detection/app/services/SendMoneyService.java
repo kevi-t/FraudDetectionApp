@@ -89,8 +89,8 @@ public class SendMoneyService {
                                             .transactionAmount(request.getTransactionAmount())
                                             .transactionType("SENDMONEY")
                                             .ReferenceCode(referenceCode)
-                                            .senderAccount(request.getSenderAccountNumber())
-                                            .receiverAccount(request.getReceiverAccountNumber())
+                                            .senderAccount(senderCheckedNumber)
+                                            .receiverAccount(receiverCheckedNumber)
                                             .status("success")
                                             .build();
                                     transactionRepository.save(trans);
