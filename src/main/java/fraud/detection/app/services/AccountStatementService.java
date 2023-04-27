@@ -1,11 +1,11 @@
 package fraud.detection.app.services;
 
 import fraud.detection.app.configurations.TwilioConfiguration;
-import fraud.detection.app.dto.AccountStatementDTO;
 import fraud.detection.app.dto.FilteredTransactions;
+import fraud.detection.app.dto.StatementDTO;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.TransactionRepository;
-import fraud.detection.app.responses.UniversalResponse;
+import fraud.detection.app.responses.AccountResponse;
 import fraud.detection.app.utils.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AccountStatementService {
 
     private final TransactionRepository transactionRepository;
     private final TwilioConfiguration twilioConfiguration;
-    public UniversalResponse response;
+    public AccountResponse response;
     public final HelperUtility helperUtility;
 
     @Autowired
@@ -35,7 +35,7 @@ public class AccountStatementService {
         this.helperUtility = helperUtility;
     }
 
-    public UniversalResponse getAllUserTransactions(AccountStatementDTO request) {
+    public AccountResponse getAllUserTransactions(StatementDTO request) {
 
         try {
             if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
@@ -97,7 +97,7 @@ public class AccountStatementService {
                         filteredTransactions.add(filteredTransaction);
                     }
 
-                    return UniversalResponse.builder()
+                    return AccountResponse.builder()
                             .message("Request Successful")
                             .data2(result)
                             .data(filteredTransactions)
@@ -105,14 +105,14 @@ public class AccountStatementService {
                             .build();
                 }
                 catch (Exception ex) {
-                    return UniversalResponse.builder()
+                    return AccountResponse.builder()
                             .message("Request Processing Error")
                             .status("1")
                             .build();
                 }
             }
             else {
-                return UniversalResponse.builder()
+                return AccountResponse.builder()
                         .message("Wrong pin!")
                         .status("1")
                         .build();

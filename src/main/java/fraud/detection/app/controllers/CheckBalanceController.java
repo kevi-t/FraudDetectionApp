@@ -1,6 +1,6 @@
 package fraud.detection.app.controllers;
 
-import fraud.detection.app.dto.CheckBalanceDTO;
+import fraud.detection.app.dto.StatementDTO;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.CheckBalanceService;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class CheckBalanceController {
     }
 
     @PostMapping("/balance")
-    public ResponseEntity<UniversalResponse> checkBalance(@Valid @RequestBody CheckBalanceDTO request){
+    public ResponseEntity<UniversalResponse> checkBalance(@Valid @RequestBody StatementDTO request){
         try{
             return ResponseEntity.ok(checkBalanceService.checkBalance(request));
         }

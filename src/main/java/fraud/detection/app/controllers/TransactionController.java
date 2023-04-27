@@ -1,7 +1,6 @@
 package fraud.detection.app.controllers;
 
-import fraud.detection.app.dto.AccountStatementDTO;
-import fraud.detection.app.dto.TransactionDTO;
+import fraud.detection.app.dto.StatementDTO;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.TransactionService;
 import jakarta.validation.Valid;
@@ -25,7 +24,7 @@ public class TransactionController {
     }
 
     @PostMapping("/balanceSheet")
-    public ResponseEntity<UniversalResponse> getIncomeAndExpenses(@Valid @RequestBody TransactionDTO request){
+    public ResponseEntity<UniversalResponse> getIncomeAndExpenses(@Valid @RequestBody StatementDTO request){
 
         try{
             return ResponseEntity.ok(transactionService.getIncomeAndExpenses(request));

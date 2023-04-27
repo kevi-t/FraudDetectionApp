@@ -1,11 +1,9 @@
 package fraud.detection.app.controllers;
 
-import fraud.detection.app.dto.AccountStatementDTO;
+import fraud.detection.app.dto.StatementDTO;
+import fraud.detection.app.responses.AccountResponse;
 import fraud.detection.app.responses.UniversalResponse;
-import fraud.detection.app.services.AccountStatementService;
-import fraud.detection.app.services.DepositStatementService;
-import fraud.detection.app.services.SendMoneyStatementService;
-import fraud.detection.app.services.WithdrawStatementService;
+import fraud.detection.app.services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,17 +18,19 @@ public class AccountStatementController {
     private final DepositStatementService depositStatementService;
     private final WithdrawStatementService withdrawStatementService;
     private final SendMoneyStatementService sendMoneyStatementService;
+    private final LipaBillStatementService lipaBillStatementService;
 
     @Autowired
-    public AccountStatementController(AccountStatementService accountStatementService, DepositStatementService depositStatementService, WithdrawStatementService withdrawStatementService, SendMoneyStatementService sendMoneyStatementService) {
+    public AccountStatementController(AccountStatementService accountStatementService, DepositStatementService depositStatementService, WithdrawStatementService withdrawStatementService, SendMoneyStatementService sendMoneyStatementService, LipaBillStatementService lipaBillStatementService) {
         this.accountStatementService = accountStatementService;
         this.depositStatementService = depositStatementService;
         this.withdrawStatementService = withdrawStatementService;
         this.sendMoneyStatementService = sendMoneyStatementService;
+        this.lipaBillStatementService = lipaBillStatementService;
     }
 
     @PostMapping("/statement")
-    public ResponseEntity<UniversalResponse> getAllUserTransactions(@Valid @RequestBody AccountStatementDTO request){
+    public ResponseEntity<AccountResponse> getAllUserTransactions(@Valid @RequestBody StatementDTO request){
 
         try{
             return ResponseEntity.ok(accountStatementService.getAllUserTransactions(request));
@@ -41,7 +41,7 @@ public class AccountStatementController {
     }
 
     @PostMapping("/depositStatement")
-    public ResponseEntity<UniversalResponse> getAllDepositUserTransactions(@Valid @RequestBody DepositStatementDTO request){
+    public ResponseEntity<UniversalResponse> getAllDepositUserTransactions(@Valid @RequestBody StatementDTO request){
 
         try{
             return ResponseEntity.ok(depositStatementService.getAllDepositUserTransactions(request));
@@ -51,7 +51,7 @@ public class AccountStatementController {
         }
     }
     @PostMapping("/withdrawStatement")
-    public ResponseEntity<UniversalResponse> getAllWithdrawUserTransactions(@Valid @RequestBody WithdrawStatementDTO request){
+    public ResponseEntity<UniversalResponse> getAllWithdrawUserTransactions(@Valid @RequestBody StatementDTO request){
 
         try{
             return ResponseEntity.ok(withdrawStatementService.getAllWithdrawUserTransactions(request));
@@ -61,10 +61,20 @@ public class AccountStatementController {
         }
     }
     @PostMapping("/sendMoneyStatement")
-    public ResponseEntity<UniversalResponse> getAllSendMoneyUserTransactions(@Valid @RequestBody DepositStatementDTO request){
+    public ResponseEntity<UniversalResponse> getAllSendMoneyUserTransactions(@Valid @RequestBody StatementDTO request){
 
         try{
             return ResponseEntity.ok(sendMoneyStatementService.getAllSendMoneyUserTransactions(request));
+        }
+        catch (Exception ex){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/lipaBillStatement")
+    public ResponseEntity<UniversalResponse> getAllLipaBillUserTransactions(@Valid @RequestBody StatementDTO request){
+
+        try{
+            return ResponseEntity.ok(lipaBillStatementService.getAllLipaBillUserTransactions(request));
         }
         catch (Exception ex){
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

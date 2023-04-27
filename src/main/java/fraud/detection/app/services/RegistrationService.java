@@ -18,7 +18,7 @@ import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-private final RegistrationResponseDTO registrationResponseDTO;
+    private final RegistrationResponseDTO registrationResponseDTO;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;

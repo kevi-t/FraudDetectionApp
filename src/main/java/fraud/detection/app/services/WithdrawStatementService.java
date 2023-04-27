@@ -1,8 +1,7 @@
 package fraud.detection.app.services;
 
 import fraud.detection.app.dto.FilteredTransactions;
-import fraud.detection.app.dto.statements.DepositStatementDTO;
-import fraud.detection.app.dto.statements.WithdrawStatementDTO;
+import fraud.detection.app.dto.StatementDTO;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.responses.UniversalResponse;
@@ -28,7 +27,7 @@ public class WithdrawStatementService {
         this.helperUtility = helperUtility;
     }
 
-    public UniversalResponse getAllWithdrawUserTransactions(WithdrawStatementDTO request) {
+    public UniversalResponse getAllWithdrawUserTransactions(StatementDTO request) {
         try {
 
             if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
@@ -42,7 +41,7 @@ public class WithdrawStatementService {
                     // Create a new list to store filtered transactions
                     List<FilteredTransactions> filteredTransactions = new ArrayList<>();
                     try {
-                        // Loop through the transactions and extract the desired fields for DEPOSIT transactions only
+
                         for (Transaction transaction : transactions) {
                             FilteredTransactions filteredTransaction = new FilteredTransactions();
                             filteredTransaction.setTransactionType(transaction.getTransactionType());

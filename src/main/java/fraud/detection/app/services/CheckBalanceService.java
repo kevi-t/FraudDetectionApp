@@ -1,9 +1,7 @@
 package fraud.detection.app.services;
 
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 import fraud.detection.app.configurations.TwilioConfiguration;
-import fraud.detection.app.dto.CheckBalanceDTO;
+import fraud.detection.app.dto.StatementDTO;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.responses.UniversalResponse;
@@ -33,7 +31,7 @@ public class CheckBalanceService {
         this.helperUtility = helperUtility;
     }
 
-    public UniversalResponse checkBalance(CheckBalanceDTO request) {
+    public UniversalResponse checkBalance(StatementDTO request) {
         try {
             if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())){
 

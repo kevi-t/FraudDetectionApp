@@ -9,10 +9,9 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
-public class UniversalResponse  {
+public class AccountResponse {
     private String status;
     private String message;
+    private Object data2;
     private Object data;
-
-    //TODO: implement how to display data to the client
 }
