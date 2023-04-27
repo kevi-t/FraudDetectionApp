@@ -35,7 +35,8 @@ public class SendMoneyService {
                             HelperUtility helperUtility,
                             AccountRepository accountRepository,
                             TwilioConfiguration twilioConfig,
-                            TransactionRepository transactionRepository, SendMoneyResponseDTO sendMoneyResponseDTO) {
+                            TransactionRepository transactionRepository,
+                            SendMoneyResponseDTO sendMoneyResponseDTO) {
         this.logs = logs;
         this.helperUtility = helperUtility;
         this.accountRepository = accountRepository;
@@ -49,9 +50,9 @@ public class SendMoneyService {
         String receiverCheckedNumber = checkPhoneNumber(request.getReceiverAccountNumber());
 
         if (helperUtility.checkPin(request.getPin(), senderCheckedNumber)){
-            try{
 
-                if (helperUtility.checkAccount(senderCheckedNumber)){
+            try{
+                if (helperUtility.checkAccount(receiverCheckedNumber)){
                     return UniversalResponse.builder()
                             .message("The Mission customer does not exist")
                             .status("1")
