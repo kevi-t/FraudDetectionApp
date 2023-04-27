@@ -3,6 +3,7 @@ package fraud.detection.app.dto;
 import lombok.Data;
 
 @Data
-public class ForgotPasswordDTO {
+public class ResetPasswordDTO {
+    private String pin;
     private String phoneNumber;
 }

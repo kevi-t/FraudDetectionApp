@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class OtpDTO {
-    private int otp;
+    private String otp;
 }
