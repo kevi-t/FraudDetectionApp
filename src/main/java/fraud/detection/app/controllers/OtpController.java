@@ -1,7 +1,7 @@
 package fraud.detection.app.controllers;
 
-import fraud.detection.app.dto.ForgotPasswordDTO;
 import fraud.detection.app.dto.OtpDTO;
+import fraud.detection.app.dto.ResetPasswordDTO;
 import fraud.detection.app.dto.SendOtpDTO;
 import fraud.detection.app.dto.SmsRequest;
 import fraud.detection.app.repositories.OtpRepository;
