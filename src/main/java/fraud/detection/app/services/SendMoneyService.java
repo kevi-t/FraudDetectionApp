@@ -14,11 +14,15 @@ import fraud.detection.app.utils.HelperUtility;
 import fraud.detection.app.utils.Logs;
 import org.springframework.stereotype.Service;
 
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
+
 @Service
 public class SendMoneyService {
     
     public final Logs logs;
-
+private double fromUpdatedBalance;
+    private double toBalance;
+    private double toUpdatedBalance;
     public  UniversalResponse response;
     public final HelperUtility helperUtility;
     public final AccountRepository accountRepository;
@@ -41,11 +45,13 @@ public class SendMoneyService {
     }
 
     public UniversalResponse sendMoney(SendMoneyDTO request){
+        String senderCheckedNumber = checkPhoneNumber(request.getSenderAccountNumber());
+        String recieverCheckedNumber = checkPhoneNumber(request.getReceiverAccountNumber());
 
-        if (helperUtility.checkPin(request.getPin(), request.getSenderAccountNumber())){
+        if (helperUtility.checkPin(request.getPin(), senderCheckedNumber)){
             try{
 
-                if (helperUtility.checkAccount(request.getReceiverAccountNumber())){
+                if (helperUtility.checkAccount(senderCheckedNumber)){
                     return UniversalResponse.builder()
                             .message("The Mission customer does not exist")
                             .status("1")
@@ -54,21 +60,26 @@ public class SendMoneyService {
                 else {
                     
                     try {
-                        Account fromaccount=accountRepository.findByAccountNumber(request.getSenderAccountNumber());
-                        double Balance= fromaccount.getAccountBalance();
+                        Account fromaccount=accountRepository.findByAccountNumber(senderCheckedNumber);
+                        Account toAccount=accountRepository.findByAccountNumber(recieverCheckedNumber);
+                        double fromBalance= fromaccount.getAccountBalance();
+                        toBalance=toAccount.getAccountBalance();
                         double SendingAmount=request.getTransactionAmount();
 
-                        if(Balance> SendingAmount){
-                            double FromBalance =Balance- SendingAmount;
-                            double ToBalance=Balance+ SendingAmount;
+                        if(fromBalance> SendingAmount){
+
                             
                             try {
-                                Account Toaccount = accountRepository.findByAccountNumber(request.getReceiverAccountNumber());
-                                Toaccount.setAccountBalance(ToBalance);
-                                accountRepository.save(Toaccount);
-                                Account FromAccount = accountRepository.findByAccountNumber(request.getSenderAccountNumber());
-                                FromAccount.setAccountBalance(FromBalance);
-                                accountRepository.save(FromAccount);
+                                fromUpdatedBalance =fromBalance- SendingAmount;
+                                toUpdatedBalance=toBalance+ SendingAmount;
+                                Account toaccount = accountRepository.findByAccountNumber(recieverCheckedNumber);
+                                toaccount.setAccountBalance(toUpdatedBalance);
+                                toaccount.setBalanceBefore(toBalance);
+                                accountRepository.save(toaccount);
+                                Account fromAccount = accountRepository.findByAccountNumber(senderCheckedNumber);
+                                fromAccount.setAccountBalance(fromUpdatedBalance);
+                                fromAccount.setBalanceBefore(fromBalance);
+                                accountRepository.save(fromAccount);
 
                                 //TODO: Implement code to Insert into transaction Table here
 //
@@ -87,7 +98,7 @@ public class SendMoneyService {
                                     transactionRepository.save(trans);
 
                                     sendMoneyResponseDTO.setTransactionAmount(request.getTransactionAmount());
-                                    sendMoneyResponseDTO.setReceiverAccountNumber(request.getReceiverAccountNumber());
+                                    sendMoneyResponseDTO.setReceiverAccountNumber(recieverCheckedNumber);
                                     return UniversalResponse.builder()
                                             .message("Transaction successful")
                                             .status("1")
@@ -101,8 +112,8 @@ public class SendMoneyService {
                                             .transactionAmount(request.getTransactionAmount())
                                             .transactionType("SENDMONEY")
                                             .ReferenceCode(referenceCode)
-                                            .senderAccount(request.getSenderAccountNumber())
-                                            .receiverAccount(request.getReceiverAccountNumber())
+                                            .senderAccount(senderCheckedNumber)
+                                            .receiverAccount(recieverCheckedNumber)
                                             .Debited(request.getTransactionAmount())
                                             .Credited(request.getTransactionAmount())
                                             .status("failed")
@@ -112,22 +123,22 @@ public class SendMoneyService {
 
                                 try {
                                     Message twilioMessage = Message.creator(
-                                                    new PhoneNumber(request.getReceiverAccountNumber()),
+                                                    new PhoneNumber(recieverCheckedNumber),
                                                     new PhoneNumber(twilioConfig.getTrial_number()),
                                                     "You have received Ksh:"
                                                             + request.getTransactionAmount() + "From"
-                                                            + request.getSenderAccountNumber()
+                                                            + senderCheckedNumber
                                                             + "You new Account Balance is Ksh:"
-                                                            + ToBalance)
+                                                            + toBalance)
                                                     .create();
 
                                     twilioMessage = Message.creator(
-                                                    new PhoneNumber(request.getSenderAccountNumber()),
+                                                    new PhoneNumber(senderCheckedNumber),
                                                     new PhoneNumber(twilioConfig.getTrial_number()),
                                                     "You have Sent Ksh:" + request.
                                                             getTransactionAmount() + "To"
-                                                            + request.getReceiverAccountNumber()
-                                                            + "You new Account Balance is Ksh:" + FromBalance)
+                                                            + recieverCheckedNumber
+                                                            + "You new Account Balance is Ksh:" + fromUpdatedBalance)
                                                     .create();
                                 }
                                 catch (Exception ex) {
@@ -152,8 +163,8 @@ public class SendMoneyService {
                                     .transactionAmount(request.getTransactionAmount())
                                     .transactionType("SENDMONEY")
                                     .ReferenceCode(referenceCode)
-                                    .senderAccount(request.getSenderAccountNumber())
-                                    .receiverAccount(request.getReceiverAccountNumber())
+                                    .senderAccount(senderCheckedNumber)
+                                    .receiverAccount(recieverCheckedNumber)
                                     .Debited(request.getTransactionAmount())
                                     .Credited(request.getTransactionAmount())
                                     .status("failed")
