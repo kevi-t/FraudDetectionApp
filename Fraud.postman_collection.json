@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "83e14f49-d0ce-4e6e-99b3-62131d664b12",
+		"_postman_id": "f88c2db9-d370-4b68-8359-532f0411f04c",
 		"name": "Fraud",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "22113006"
+		"_exporter_id": "12644241",
+		"_collection_link": "https://galactic-resonance-952388.postman.co/workspace/My-Workspace~8bcc4a8b-5315-444a-806d-16281c6ed14e/collection/12644241-f88c2db9-d370-4b68-8359-532f0411f04c?action=share&creator=12644241&source=collection_link"
 	},
 	"item": [
 		{
@@ -13,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\"firstName\":\"James\",\r\n\"middleName\":\"Otieno\",\r\n\"lastName\":\"Juma\",\r\n\"dateOfBirth\":\"22/07/1990\",\r\n\"gender\":\"Male\",\r\n\"password\":\"1234\",\r\n\"occupation\":\"Driver\",\r\n\"permanentAddress\":\"767668\", \r\n\"currentAddress\":\"10-60400\",  \r\n\"mobileNumber\":\"+254792526374\",\r\n\"email\":\"JamesOtieno@gmail.com\",\r\n\"pinCode\":\"5776\", \r\n\"city\":\"Mombasa\",  \r\n\"state\":\"Mwambao\", \r\n\"country\":\"Kenya\"\r\n}",
+					"raw": "{\r\n\"firstName\":\"Ali\",\r\n\"middleName\":\"Juma\",\r\n\"lastName\":\"Ali\",\r\n\"dateOfBirth\":\"2005-Apr-25\",\r\n\"gender\":\"Male\",\r\n\"pin\":\"3099\",\r\n\"occupation\":\"Deeloper\",\r\n\"permanentAddress\":\"37676039\", \r\n\"currentAddress\":\"30378789\",  \r\n\"mobileNumber\":\"0112016790\",\r\n\"email\":\"phillip@gmail.com\",\r\n\"pinCode\":\"3030\", \r\n\"city\":\"Meru\",  \r\n\"state\":\"Meru\", \r\n\"country\":\"Kenya\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,8 +22,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9000/fraud/app/register",
-					"protocol": "http",
+					"raw": "localhost:9000/fraud/app/register",
 					"host": [
 						"localhost"
 					],
@@ -39,11 +39,21 @@
 		{
 			"name": "Login",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQ3NDgxMDE1NyIsImlhdCI6MTY4MTg5MDEzMiwiZXhwIjoxNjgxODkxOTMyfQ.Fh1FJ6XaCNQAsPYsf0hW-4MzSKPLcwLVL9utGugeNYY\"",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\"mobileNumber\":\"+254 112016790\",\r\n\"password\":\"332\"\r\n}",
+					"raw": "{\r\n    \"mobileNumber\": \"0112016790\",\r\n    \"pin\": \"3099\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -73,7 +83,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\"phoneNumber\":\"+254 112 016790\"\r\n}",
+					"raw": "{\r\n\"phoneNumber\":\"0112017790\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -81,7 +91,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9000/otp/send",
+					"raw": "http://localhost:9000/otp/sendregisterotp",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -89,7 +99,7 @@
 					"port": "9000",
 					"path": [
 						"otp",
-						"send"
+						"sendregisterotp"
 					]
 				}
 			},
@@ -110,17 +120,59 @@
 					}
 				},
 				"url": {
-					"raw": "http://6c5d-41-90-101-26.in.ngrok.io/otp/verify",
+					"raw": "http://localhost:9000/otp/verify",
 					"protocol": "http",
 					"host": [
-						"6c5d-41-90-101-26",
-						"in",
-						"ngrok",
-						"io"
+						"localhost"
 					],
+					"port": "9000",
 					"path": [
 						"otp",
 						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ResetPin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQ3OTI1MjYzOTQiLCJpYXQiOjE2ODIzMzg2MDYsImV4cCI6MTY4MjM0MDQwNn0.jB7xMD1alFfs7nCA9uZdBNMjJk9SO_E5msZRQKBPe0w\"",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"phoneNumber\":\"254112016790\",\r\n\"pin\":\"7677\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.137.1:9000/otp/forgot/password/reset",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"137",
+						"1"
+					],
+					"port": "9000",
+					"path": [
+						"otp",
+						"forgot",
+						"password",
+						"reset"
 					]
 				}
 			},
@@ -133,7 +185,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\":\"+254792526384\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"+254792526394\",\r\n    \"pin\": \"1235\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -141,7 +193,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9000/fraud/app/account/account-balance",
+					"raw": "http://localhost:9000/fraud/app/account/balance",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -151,20 +203,20 @@
 						"fraud",
 						"app",
 						"account",
-						"account-balance"
+						"balance"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Deposit",
+			"name": "AccountStatement",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\":\"+254792526384\",\r\n    \"transactionAmount\":\"150\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"254792526394\",\r\n    \"pin\": \"1235\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -172,7 +224,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9000/fraud/app/account/deposit",
+					"raw": "http://localhost:9000/fraud/app/account/statement",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -182,20 +234,20 @@
 						"fraud",
 						"app",
 						"account",
-						"deposit"
+						"statement"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "SendMoney",
+			"name": "DepositStatement",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n   \"senderAccountNumber\":\"+254792526374\",\r\n   \"receiverAccountNumber\":\"+254792526384\", \r\n   \"transactionAmount\":\"150\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"254792526394\",\r\n    \"pin\": \"1235\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -203,7 +255,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:9000/fraud/app/account/send-money",
+					"raw": "http://localhost:9000/fraud/app/account/depositStatement",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -213,20 +265,142 @@
 						"fraud",
 						"app",
 						"account",
-						"send-money"
+						"depositStatement"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Withdraw",
+			"name": "WithdrawStatement",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\":\"+254792526384\",\r\n    \"transactionAmount\":\"100\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"254792526394\",\r\n    \"pin\": \"1235\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/withdrawStatement",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"withdrawStatement"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendMoneyStatement",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\": \"254792526394\",\r\n    \"pin\": \"1235\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/sendMoneyStatement",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"sendMoneyStatement"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LipaTillStatement",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\": \"254792526394\",\r\n    \"pin\": \"1235\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/account/lipaBillStatement",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"account",
+						"lipaBillStatement"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "MpesaDeposit",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n{\r\n\"Amount\": 1000,\r\n\"PhoneNumber\":\"0112016790\",\r\n\"pin\":\"3099\",\r\n\"accountNo\":\"0112016790\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/mobile-money/stk-deposit-request",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"mobile-money",
+						"stk-deposit-request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WithdrawMoney",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\": \"254792526394\",\r\n    \"transactionAmount\": \"50\",\r\n    \"pin\": \"1234\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -245,6 +419,144 @@
 						"app",
 						"account",
 						"withdraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "M-TransactionSendMoney",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQxMTIwMTY3OTAiLCJpYXQiOjE2ODI1ODgwNzEsImV4cCI6MTY4MjU4OTg3MX0.MIEGfCDXCOl8z82PTXKWF3aCgqNSU00AeuWAiVlwQO8\"",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"senderAccountNumber\":\"0112016790\",\r\n\"transactionAmount\":\"10\",\r\n\"receiverAccountNumber\":\"0792526394\",\r\n\"pin\":\"3099\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/fraud/app/sendmoney",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"sendmoney"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SafaricomSendMoney",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQxMTIwMTY3OTAiLCJpYXQiOjE2ODI2NjE1MzcsImV4cCI6MTY4MjY2MzMzN30._lsvGR2DIKbcJ_ZnyVsydzSxy_jERZVj2IU5BKN0Mr8\"",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"PartyB\":\"0792526394\",\r\n\"Amount\":\"1\",\r\n\"Occassion\":\"utyyu\",\r\n\"Remarks\":\"iyyy\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/mobile-money/b2c-transaction",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"mobile-money",
+						"b2c-transaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "MpesaAccessToken",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9000/mobile-money/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"mobile-money",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LipaTill",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQxMTIwMTY3OTAiLCJpYXQiOjE2ODI2NjIyNjAsImV4cCI6MTY4MjY2NDA2MH0.Cu7KK-shMQhgjdNIF3DKDcy_w12r12GNp4aei5w9OZ8\"",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"pin\":\"3099\",\r\n\"payBillNo\":\"457845\",\r\n\"amount\":100,\r\n\"payerNo\":\"254716198487\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9000/fraud/app/lipabill",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"fraud",
+						"app",
+						"lipabill"
 					]
 				}
 			},
