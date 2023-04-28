@@ -30,7 +30,7 @@ public class TwilioSmsSender  {
     public void SendSms(SmsRequest smsRequest) {
         try {
             LocalDateTime Expiry = LocalDateTime.now().plusMinutes(5);
-            Message.creator(new PhoneNumber(smsRequest.getPhoneNumber()),
+            Message.creator(new PhoneNumber("+"+smsRequest.getPhoneNumber()),
                     new PhoneNumber(twilioConfig.getTrial_number()),
                     String.valueOf(smsRequest.getMessage())).create();
 

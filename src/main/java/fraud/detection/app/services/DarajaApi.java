@@ -1,5 +1,6 @@
 package fraud.detection.app.services;
 import fraud.detection.app.dto.mpesa.*;
+import fraud.detection.app.responses.UniversalResponse;
 
 import java.io.IOException;
 
@@ -10,6 +11,6 @@ public interface DarajaApi {
      */
     AccessTokenResponse getAccessToken();
     AccessTokenResponse registerUrl() throws IOException;
-    StkPushSyncResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest);
+    UniversalResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest);
     B2CTransactionSyncResponse performB2CTransaction(InternalB2CTransactionRequest internalB2CTransactionRequest);
 }

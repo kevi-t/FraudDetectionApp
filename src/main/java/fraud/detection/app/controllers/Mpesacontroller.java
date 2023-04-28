@@ -6,6 +6,7 @@ import fraud.detection.app.configurations.MpesaConfiguration;
 import fraud.detection.app.dto.mpesa.*;
 import fraud.detection.app.models.StkPush_Entries;
 import fraud.detection.app.repositories.StkPushEntriesRepository;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.DarajaApi;
 import fraud.detection.app.services.DarajaApiImpl;
 import fraud.detection.app.utils.HelperUtility;
@@ -51,7 +52,7 @@ private final MpesaConfiguration mpesaConfiguration;
             return ResponseEntity.ok(darajaApi.getAccessToken());
         }
     @PostMapping(path = "/stk-deposit-request", produces = "application/json")
-    public ResponseEntity<StkPushSyncResponse> performStkPushTransaction(@RequestBody InternalStkPushRequest internalStkPushRequest) {
+    public ResponseEntity<UniversalResponse> performStkPushTransaction(@RequestBody InternalStkPushRequest internalStkPushRequest) {
 
         return ResponseEntity.ok(darajaApi.DepositStkPushTransaction(internalStkPushRequest));
     }

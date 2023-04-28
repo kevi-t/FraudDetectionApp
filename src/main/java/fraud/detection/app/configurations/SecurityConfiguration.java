@@ -58,10 +58,12 @@ public class SecurityConfiguration {
                                 "/otp/send","/otp/verify",
                                 "/mobile-money/stk-deposit-request",
                                 "/mobile-money/token",
-                                "/fraud/app/withdraw", "/fraud/app/lipabill","/otp/forgot/password/reset").permitAll()
+                                "/fraud/app/withdraw", "/fraud/app/sendmoney"
+                                ,"/otp/forgot/password/reset"
+                                ,"/otp/sendregisterotp").permitAll()
                 .and()
                 .authorizeHttpRequests().requestMatchers
-                        ("/api/auth//getusers").hasAuthority("Admin")
+                        ("/api/auth/getusers").hasAuthority("Admin")
                 .anyRequest().authenticated();
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(JwtTokenfilter, UsernamePasswordAuthenticationFilter.class);

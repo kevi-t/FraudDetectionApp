@@ -62,6 +62,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         else if (request.getServletPath().equals("/otp/forgot/password/reset")){
             filterChain.doFilter(request, response);
         }
+        else if (request.getServletPath().equals("/fraud/app/sendmoney")){
+            filterChain.doFilter(request, response);
+        }
+        else if (request.getServletPath().equals("/otp/sendregisterotp")){
+            filterChain.doFilter(request, response);
+        }
         else {
 
             String authorizationHeader = request.getHeader("Authorization");

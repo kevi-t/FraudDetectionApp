@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class LipaBillResponse {
+public class LipaTillResponse {
     private String RecievedBy;
     private double amount;
     private double balance;

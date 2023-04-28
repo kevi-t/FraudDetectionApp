@@ -19,7 +19,7 @@ import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 
 @Service
 @Slf4j
-public class LipaBillService {
+public class LipaTillService {
 
     private final TransactionRepository transactionRepository;
     private final LogFileCreator logFileCreator;
@@ -30,7 +30,7 @@ public class LipaBillService {
     private final LipaTillResponse lipaTillResponse;
     String referenceCode = HelperUtility.referenceCodeGenerator();
 
-    public LipaBillService(TransactionRepository transactionRepository
+    public LipaTillService(TransactionRepository transactionRepository
             , LogFileCreator logFileCreator
             , HelperUtility helperUtility
             , AccountRepository accountRepository
@@ -59,17 +59,21 @@ public class LipaBillService {
                 account.setBalanceBefore(BeforeAccountBalance);
                 account.setAccountBalance(updatedAccountBalance);
                 accountRepository.save(account);
-
-                //Inserting Into transaction Table
-                Transaction trans = Transaction.builder()
-                        .transactionType("LIPABILL")
-                        .senderAccount(CheckedPayerNumber)
-                        .receiverAccount(request.getTillNo())
-                        .status("success")
-                        .transactionAmount(request.getAmount())
-                        .ReferenceCode(referenceCode)
-                        .build();
-                transactionRepository.save(trans);
+try {
+    //Inserting Into transaction Table
+    var trans = Transaction.builder()
+            .transactionType("LIPATILL")
+            .senderAccount(CheckedPayerNumber)
+            .receiverAccount(request.getTillNo())
+            .status("success")
+            .transactionAmount(request.getAmount())
+            .ReferenceCode(referenceCode)
+            .build();
+    transactionRepository.save(trans);
+    System.out.println(trans);
+}catch (Exception e){
+    System.out.println(e);
+}
 
 
                 //sending message to the payee
@@ -77,7 +81,7 @@ public class LipaBillService {
                     Message.creator(
                             new PhoneNumber(request.getPayerNo()),
                             new PhoneNumber(twilioConfiguration.getTrial_number()),
-                            "You have Payed Ksh:" + request.getAmount() + "To Paybill No:"+ request.getTillNo()
+                            "You have Payed Ksh:" + request.getAmount() + "To Till No:"+ request.getTillNo()
                             +"You new Account Balance is Ksh:" + updatedAccountBalance)
                             .create();
                 }
@@ -98,7 +102,7 @@ public class LipaBillService {
 
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
-                        .transactionType("LIPABILL")
+                        .transactionType("LIPATILL")
                         .senderAccount(CheckedPayerNumber)
                         .receiverAccount(request.getTillNo())
                         .status("failed")

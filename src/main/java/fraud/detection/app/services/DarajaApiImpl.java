@@ -8,6 +8,7 @@ import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
 import fraud.detection.app.repositories.TransactionRepository;
+import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.utils.Constants;
 import fraud.detection.app.utils.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static fraud.detection.app.utils.Constants.*;
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 
 @Service
 @Slf4j
@@ -124,21 +126,24 @@ public class DarajaApiImpl  implements DarajaApi{
     }
 
     @Override
-    public StkPushSyncResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
+    public UniversalResponse DepositStkPushTransaction(InternalStkPushRequest internalStkPushRequest) {
         String ExternalPin = internalStkPushRequest.getPin();
-        String AccountNo = internalStkPushRequest.getPhoneNumber();
-        if (helperUtility.checkPin(ExternalPin, AccountNo)==false) {
+       // String AccountNo = internalStkPushRequest.getPhoneNumber();
+        String checkedAccountNumber = checkPhoneNumber(internalStkPushRequest.getAccountNo());
+
+        if (helperUtility.checkPin(ExternalPin, checkedAccountNumber)==false) {
 
             //Send A message to the user telling them they entered the wrong pin
             try {
                 Message.creator(new PhoneNumber("+254 112 016790"),
-                                new PhoneNumber(internalStkPushRequest.getPhoneNumber()),
+                                new PhoneNumber(checkedAccountNumber),
                                 "You entered the wrong pin")
                         .create();
             }
             catch (Exception e) {
                 log.error(String.format("Could not perform sending messages request -> %s", e.getLocalizedMessage()));
             }
+            return UniversalResponse.builder().message("Wrong Pin").status("1").build();
         }
         else{
             ExternalStkPushRequest externalStkPushRequest = new ExternalStkPushRequest();
@@ -150,9 +155,9 @@ public class DarajaApiImpl  implements DarajaApi{
             externalStkPushRequest.setTimestamp(transactionTimestamp);
             externalStkPushRequest.setTransactionType(Constants.CUSTOMER_PAYBILL_ONLINE);
             externalStkPushRequest.setAmount(internalStkPushRequest.getAmount());
-            externalStkPushRequest.setPartyA(internalStkPushRequest.getPhoneNumber());
+            externalStkPushRequest.setPartyA(checkedAccountNumber);
             externalStkPushRequest.setPartyB(mpesaConfiguration.getStkPushShortCode());
-            externalStkPushRequest.setPhoneNumber(internalStkPushRequest.getPhoneNumber());
+            externalStkPushRequest.setPhoneNumber(checkedAccountNumber);
             externalStkPushRequest.setCallBackURL(mpesaConfiguration.getStkPushRequestCallbackUrl());
             externalStkPushRequest.setAccountReference(HelperUtility.getTransactionUniqueNumber());
             externalStkPushRequest.setTransactionDesc(String.format("%s Transaction", internalStkPushRequest.getPhoneNumber()));
@@ -183,7 +188,7 @@ public class DarajaApiImpl  implements DarajaApi{
                 transactionRepository.save(trans);
 
                 // Updating Accounts table
-                 Account mtransactionAccount = accountRepository.findByAccountNumber(internalStkPushRequest.getPhoneNumber());
+                 Account mtransactionAccount = accountRepository.findByAccountNumber(checkedAccountNumber);
                  double currentAccountBalance = mtransactionAccount.getAccountBalance();
                  UpdatedAccountBalance = currentAccountBalance + internalStkPushRequest.getAmount();
                  mtransactionAccount.setAccountBalance(UpdatedAccountBalance);
@@ -197,20 +202,22 @@ public class DarajaApiImpl  implements DarajaApi{
                 return null;
             }
         }
-        return stkPushSyncResponse;
+        return UniversalResponse.builder().
+                data(stkPushSyncResponse).
+                status("1").message("Request accepted for processing").
+                build();
     }
 
 
     @Override
     public B2CTransactionSyncResponse performB2CTransaction(InternalB2CTransactionRequest internalB2CTransactionRequest) {
-
         AccessTokenResponse accessTokenResponse = getAccessToken();
         log.info(String.format("Access Token: %s", accessTokenResponse.getAccessToken()));
 
         B2CTransactionRequest b2CTransactionRequest = new B2CTransactionRequest();
 
         b2CTransactionRequest.setCommandID(mpesaConfiguration.getCommandID());
-       // b2CTransactionRequest.setPartyA(internalB2CTransactionRequest.getPartyA());
+      // b2CTransactionRequest.setPartyA(internalB2CTransactionRequest.getPartyA());
         b2CTransactionRequest.setAmount(internalB2CTransactionRequest.getAmount());
         b2CTransactionRequest.setPartyB(internalB2CTransactionRequest.getPartyB());
         b2CTransactionRequest.setRemarks(internalB2CTransactionRequest.getRemarks());
@@ -242,6 +249,7 @@ public class DarajaApiImpl  implements DarajaApi{
         }
         catch (IOException e) {
             log.error(String.format("Could not perform B2C transaction ->%s", e.getLocalizedMessage()));
+
             return null;
         }
 
