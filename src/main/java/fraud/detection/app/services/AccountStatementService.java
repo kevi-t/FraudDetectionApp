@@ -1,6 +1,7 @@
 package fraud.detection.app.services;
 
 import fraud.detection.app.configurations.TwilioConfiguration;
+import fraud.detection.app.dto.AccountStatementResponse;
 import fraud.detection.app.dto.FilteredTransactions;
 import fraud.detection.app.dto.StatementDTO;
 import fraud.detection.app.models.Transaction;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 
 @Service
 @Slf4j
@@ -36,12 +39,12 @@ public class AccountStatementService {
     }
 
     public AccountResponse getAllUserTransactions(StatementDTO request) {
-
+        String checkedAccountNumber = checkPhoneNumber(request.getAccountNumber());
         try {
             if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
 
                 try {
-                    String account = request.getAccountNumber();
+                    String account = checkedAccountNumber;
                     List<Transaction> transactions = transactionRepository.findBySenderAccountAndStatusOrReceiverAccountAndStatus(account,"success",account,"success");
 
                     double totalIncome = 0.00;
@@ -75,10 +78,12 @@ public class AccountStatementService {
 
                     // Create a new list to store filtered transactions
                     List<FilteredTransactions> filteredTransactions = new ArrayList<>();
+                    AccountStatementResponse accountStatementResponse = new AccountStatementResponse();
 
                     // Loop through the transactions and extract the desired fields
                     for (Transaction transaction : transactions) {
                         FilteredTransactions filteredTransaction = new FilteredTransactions();
+
                         if (transaction.getTransactionType()!=null){
                             filteredTransaction.setTransactionType(transaction.getTransactionType());
                         }
@@ -96,11 +101,11 @@ public class AccountStatementService {
                         // Add the filtered transaction to the filteredTransactions list
                         filteredTransactions.add(filteredTransaction);
                     }
-
+                    accountStatementResponse.setTransactionList(filteredTransactions);
                     return AccountResponse.builder()
                             .message("Request Successful")
                             .data2(result)
-                            .data(filteredTransactions)
+                            .data(accountStatementResponse)
                             .status("1")
                             .build();
                 }

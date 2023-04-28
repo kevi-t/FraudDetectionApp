@@ -15,6 +15,8 @@ import fraud.detection.app.utils.LogFileCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
+
 @Service
 @Slf4j
 public class LipaBillService {
@@ -42,15 +44,16 @@ public class LipaBillService {
     }
 
     public UniversalResponse lipaBill(LipaBillDto request) {
+        String checkedAccountNumber = checkPhoneNumber(request.getPayerNo());
 
-        Account account=accountRepository.findByAccountNumber(request.getPayerNo());
+        Account account=accountRepository.findByAccountNumber(checkedAccountNumber);
         System.out.println(account);
 
-        if (helperUtility.checkPin(request.getPin(),request.getPayerNo())) {
+        if (helperUtility.checkPin(request.getPin(),checkedAccountNumber)) {
 
             if (helperUtility.checkAccountBalance(request.getPayerNo(), request.getAmount())) {
 
-                account = accountRepository.findByAccountNumber(request.getPayerNo());
+                account = accountRepository.findByAccountNumber(checkedAccountNumber);
                 double updatedAccountBalance = account.getAccountBalance() - request.getAmount();
                 //updating Accounts Table
                 double BeforeAccountBalance = account.getAccountBalance();
@@ -61,7 +64,7 @@ public class LipaBillService {
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
                         .transactionType("LIPABILL")
-                        .senderAccount(request.getPayerNo())
+                        .senderAccount(checkedAccountNumber)
                         .receiverAccount(request.getPayBillNo())
                         .status("success")
                         .transactionAmount(request.getAmount())
@@ -75,7 +78,7 @@ public class LipaBillService {
                     Message.creator(
                             new PhoneNumber(request.getPayerNo()),
                             new PhoneNumber(twilioConfiguration.getTrial_number()),
-                            "You have Payed Ksh:" + request.getAmount() + "To Paybill No:"+ request.getPayBillNo()
+                            referenceCode+" Confirmed you have Payed Ksh:" + request.getAmount() + "To Paybill No:"+ request.getPayBillNo()
                             +"You new Account Balance is Ksh:" + updatedAccountBalance)
                             .create();
                 }
@@ -97,7 +100,7 @@ public class LipaBillService {
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
                         .transactionType("LIPABILL")
-                        .senderAccount(request.getPayerNo())
+                        .senderAccount(checkedAccountNumber)
                         .receiverAccount(request.getPayBillNo())
                         .status("failed")
                         .transactionAmount(request.getAmount())

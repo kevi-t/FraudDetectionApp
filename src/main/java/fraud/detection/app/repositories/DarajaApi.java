@@ -1,4 +1,4 @@
-package fraud.detection.app.services;
+package fraud.detection.app.repositories;
 import fraud.detection.app.dto.mpesa.*;
 
 import java.io.IOException;

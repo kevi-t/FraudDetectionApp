@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CheckBalanceController {
 
     private final CheckBalanceService checkBalanceService;
+
     @Autowired
     public CheckBalanceController(CheckBalanceService checkBalanceService) {
         this.checkBalanceService = checkBalanceService;

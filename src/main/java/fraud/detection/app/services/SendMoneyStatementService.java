@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
+
 @Service
 @Slf4j
 public class SendMoneyStatementService {
@@ -29,13 +31,14 @@ public class SendMoneyStatementService {
     }
 
     public UniversalResponse getAllSendMoneyUserTransactions(StatementDTO request) {
+        String checkedAccountNumber = checkPhoneNumber(request.getAccountNumber());
         try {
 
-            if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
+            if (helperUtility.checkPin(request.getPin(), checkedAccountNumber)) {
 
                 try {
 
-                    String account = request.getAccountNumber();
+                    String account = checkedAccountNumber;
                     List<Transaction> transactions = transactionRepository.findBySenderAccountAndStatusAndTransactionTypeOrReceiverAccountAndStatusAndTransactionType
                             (account,"success","SENDMONEY",account,"success","SENDMONEY");
 

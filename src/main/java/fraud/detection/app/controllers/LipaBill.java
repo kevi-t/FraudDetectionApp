@@ -4,6 +4,7 @@ import fraud.detection.app.dto.LipaBillDto;
 import fraud.detection.app.responses.UniversalResponse;
 import fraud.detection.app.services.LipaBillService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ public class LipaBill {
 
     private final LipaBillService lipaBillService;
 
+    @Autowired
     public LipaBill(LipaBillService lipaBillService) {
         this.lipaBillService = lipaBillService;
     }

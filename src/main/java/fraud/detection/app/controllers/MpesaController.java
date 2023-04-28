@@ -6,7 +6,7 @@ import fraud.detection.app.configurations.MpesaConfiguration;
 import fraud.detection.app.dto.mpesa.*;
 import fraud.detection.app.models.StkPush_Entries;
 import fraud.detection.app.repositories.StkPushEntriesRepository;
-import fraud.detection.app.services.DarajaApi;
+import fraud.detection.app.repositories.DarajaApi;
 import fraud.detection.app.services.DarajaApiImpl;
 import fraud.detection.app.utils.HelperUtility;
 import lombok.SneakyThrows;
@@ -24,18 +24,23 @@ import static fraud.detection.app.utils.Constants.*;
 @RestController
 @Slf4j
 @RequestMapping("mobile-money")
-public class Mpesacontroller {
-private final StkPushEntriesRepository stkPushEntriesRepository;
-private final AcknowledgeResponse acknowledgeResponse;
-private final DarajaApiImpl darajaApiImpl;
-private final MpesaConfiguration mpesaConfiguration;
-      private final DarajaApi darajaApi;
+public class MpesaController {
+
+    private final StkPushEntriesRepository stkPushEntriesRepository;
+    private final AcknowledgeResponse acknowledgeResponse;
+    private final DarajaApiImpl darajaApiImpl;
+    private final MpesaConfiguration mpesaConfiguration;
+    private final DarajaApi darajaApi;
     private final ObjectMapper objectMapper;
     private  final OkHttpClient okHttpClient;
 
-    public Mpesacontroller(StkPushEntriesRepository stkPushEntriesRepository
+    public MpesaController(StkPushEntriesRepository stkPushEntriesRepository
             , AcknowledgeResponse acknowledgeResponse
-            , DarajaApiImpl darajaApiImpl, MpesaConfiguration mpesaConfiguration, DarajaApi darajaApi, ObjectMapper objectMapper, OkHttpClient okHttpClient) {
+            , DarajaApiImpl darajaApiImpl
+            , MpesaConfiguration mpesaConfiguration
+            , DarajaApi darajaApi
+            , ObjectMapper objectMapper
+            , OkHttpClient okHttpClient) {
         this.stkPushEntriesRepository = stkPushEntriesRepository;
         this.acknowledgeResponse = acknowledgeResponse;
         this.darajaApiImpl = darajaApiImpl;
@@ -47,9 +52,9 @@ private final MpesaConfiguration mpesaConfiguration;
 
 
     @GetMapping(path = "/token", produces = "application/json")
-        public ResponseEntity<AccessTokenResponse> getAccessToken() {
+    public ResponseEntity<AccessTokenResponse> getAccessToken() {
             return ResponseEntity.ok(darajaApi.getAccessToken());
-        }
+    }
     @PostMapping(path = "/stk-deposit-request", produces = "application/json")
     public ResponseEntity<StkPushSyncResponse> performStkPushTransaction(@RequestBody InternalStkPushRequest internalStkPushRequest) {
 

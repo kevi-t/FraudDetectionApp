@@ -43,11 +43,13 @@ public class OtpController {
         this.helperUtility = helperUtility;
         this.forgotPasswordService = forgotPasswordService;
     }
+
     @PostMapping("/forgot/password/reset")
     public ResponseEntity<UniversalResponse>resetPassword(@RequestBody ResetPasswordDTO request) {
         System.out.println(request);
         return ResponseEntity.ok(forgotPasswordService.changePassword(request));
     }
+
     @PostMapping("/send")
     public UniversalResponse sendOtp(@RequestBody SendOtpDTO request) {
         System.out.println(request);

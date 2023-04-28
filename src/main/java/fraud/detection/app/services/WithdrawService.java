@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
+
 @Service
 @Slf4j
 public class WithdrawService {
@@ -39,11 +41,12 @@ public class WithdrawService {
     }
 
     public UniversalResponse withdrawMoney(WithdrawDTO request) {
+        String checkedAccountNumber = checkPhoneNumber(request.getAccountNumber());
 
         try{
-            Account accountNumber = accountRepository.findByAccountNumber(request.getAccountNumber());
+            Account accountNumber = accountRepository.findByAccountNumber(checkedAccountNumber);
 
-            if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
+            if (helperUtility.checkPin(request.getPin(), checkedAccountNumber)) {
 
                 double inputAmount = request.getTransactionAmount();
                 double currentBalance = accountNumber.getAccountBalance();
@@ -53,8 +56,8 @@ public class WithdrawService {
                             .transactionAmount(request.getTransactionAmount())
                             .transactionType("WITHDRAW")
                             .ReferenceCode(referenceCode)
-                            .senderAccount(request.getAccountNumber())
-                            .receiverAccount(request.getAccountNumber())
+                            .senderAccount(checkedAccountNumber)
+                            .receiverAccount(checkedAccountNumber)
                             .status("failed")
                             .build();
                     transactionRepository.save(trans);
@@ -73,8 +76,8 @@ public class WithdrawService {
                         accountRepository.save(accountNumber);
 
                         Transaction transaction = Transaction.builder()
-                                .senderAccount(request.getAccountNumber())
-                                .receiverAccount(request.getAccountNumber())
+                                .senderAccount(checkedAccountNumber)
+                                .receiverAccount(checkedAccountNumber)
                                 .transactionAmount(request.getTransactionAmount())
                                 .ReferenceCode(referenceCode)
                                 .transactionType("WITHDRAW")
@@ -82,26 +85,26 @@ public class WithdrawService {
                                 .build();
                         transactionRepository.save(transaction);
 
-                        try {
-                            Message.creator(
-                                    new PhoneNumber(request.getAccountNumber()),
-                                    new PhoneNumber(twilioConfig.getTrial_number()),
-                                    "Confirmed Withdraw. Ksh" + request.getTransactionAmount()+"Account balance.Ksh"+accountNumber.getAccountBalance())
-                                    .create();
+//                        try {
+//                            Message.creator(
+//                                    new PhoneNumber(request.getAccountNumber()),
+//                                    new PhoneNumber(twilioConfig.getTrial_number()),
+//                                    referenceCode+" Confirmed Withdraw. Ksh" + request.getTransactionAmount()+"Account balance.Ksh"+accountNumber.getAccountBalance())
+//                                    .create();
+//                        }
+//                        catch (Exception ex) {
+//                            logs.log("Error While Sending Transaction Message===>" +ex.getMessage());
+//                            return UniversalResponse.builder()
+//                                    .message("Error while sending transaction message")
+//                                    .status("1")
+//                                    .build();
+//                        }
 
-                            return  UniversalResponse.builder()
-                                    .message(" Withdraw request successful")
-                                    .status("0")
-                                    .data("Amount:"+request.getTransactionAmount())
-                                    .build();
-                        }
-                        catch (Exception ex) {
-                            logs.log("Error While Sending Transaction Message===>" +ex.getMessage());
-                            return UniversalResponse.builder()
-                                    .message("Error while sending transaction message")
-                                    .status("1")
-                                    .build();
-                        }
+                        return  UniversalResponse.builder()
+                                .message(" Withdraw request successful")
+                                .status("0")
+                                .data("Amount:"+request.getTransactionAmount())
+                                .build();
                     }
                     catch (Exception ex){
                         logs.log(ex.getMessage());
@@ -110,8 +113,8 @@ public class WithdrawService {
                                 .transactionAmount(request.getTransactionAmount())
                                 .transactionType("WITHDRAW")
                                 .ReferenceCode(referenceCode)
-                                .senderAccount(request.getAccountNumber())
-                                .receiverAccount(request.getAccountNumber())
+                                .senderAccount(checkedAccountNumber)
+                                .receiverAccount(checkedAccountNumber)
                                 .status("failed")
                                 .build();
                         transactionRepository.save(trans);

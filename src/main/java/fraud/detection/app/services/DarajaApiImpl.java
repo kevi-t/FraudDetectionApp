@@ -7,6 +7,7 @@ import fraud.detection.app.dto.mpesa.*;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
+import fraud.detection.app.repositories.DarajaApi;
 import fraud.detection.app.repositories.TransactionRepository;
 import fraud.detection.app.utils.Constants;
 import fraud.detection.app.utils.HelperUtility;
@@ -22,7 +23,7 @@ import static fraud.detection.app.utils.Constants.*;
 
 @Service
 @Slf4j
-public class DarajaApiImpl  implements DarajaApi{
+public class DarajaApiImpl  implements DarajaApi {
     private final MpesaConfiguration mpesaConfiguration;
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
@@ -131,7 +132,7 @@ public class DarajaApiImpl  implements DarajaApi{
 
             //Send A message to the user telling them they entered the wrong pin
             try {
-                Message.creator(new PhoneNumber("+254 112 016790"),
+                Message.creator(new PhoneNumber("+2547925263904"),
                                 new PhoneNumber(internalStkPushRequest.getPhoneNumber()),
                                 "You entered the wrong pin")
                         .create();

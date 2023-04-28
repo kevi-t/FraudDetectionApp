@@ -1,6 +1,7 @@
 package fraud.detection.app.dto.mpesa;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
     @Data
@@ -8,9 +9,9 @@ import lombok.Data;
 
         @JsonProperty("Amount")
         private double amount;
-
         @JsonProperty("PhoneNumber")
         private String phoneNumber;
+        @NotNull(message = "Enter pin")
         private String pin;
     }
 

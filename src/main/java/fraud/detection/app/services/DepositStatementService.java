@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
+
 @Service
 @Slf4j
 public class DepositStatementService {
@@ -28,15 +30,15 @@ public class DepositStatementService {
     }
 
     public UniversalResponse getAllDepositUserTransactions(StatementDTO request) {
+        String checkedAccountNumber = checkPhoneNumber(request.getAccountNumber());
         try {
 
-            if (helperUtility.checkPin(request.getPin(), request.getAccountNumber())) {
+            if (helperUtility.checkPin(request.getPin(), checkedAccountNumber)) {
 
                 try {
 
-                    String account = request.getAccountNumber();
                     List<Transaction> transactions = transactionRepository.findBySenderAccountAndStatusAndTransactionTypeOrReceiverAccountAndStatusAndTransactionType
-                            (account,"success","DEPOSIT",account,"success","DEPOSIT");
+                            (checkedAccountNumber,"success","DEPOSIT", checkedAccountNumber,"success","DEPOSIT");
 
                     // Create a new list to store filtered transactions
                     List<FilteredTransactions> filteredTransactions = new ArrayList<>();

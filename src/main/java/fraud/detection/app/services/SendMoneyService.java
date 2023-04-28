@@ -122,7 +122,7 @@ public class SendMoneyService {
                                     Message twilioMessage = Message.creator(
                                                     new PhoneNumber(receiverCheckedNumber),
                                                     new PhoneNumber(twilioConfig.getTrial_number()),
-                                                    "You have received Ksh:"
+                                                    referenceCode+" Confirmed you have received Ksh:"
                                                             + request.getTransactionAmount() + "From"
                                                             + senderCheckedNumber
                                                             + "You new Account Balance is Ksh:"
@@ -132,7 +132,7 @@ public class SendMoneyService {
                                     twilioMessage = Message.creator(
                                                     new PhoneNumber(senderCheckedNumber),
                                                     new PhoneNumber(twilioConfig.getTrial_number()),
-                                                    "You have Sent Ksh:" + request.
+                                                    referenceCode+" Confirmed you have Sent Ksh:" + request.
                                                             getTransactionAmount() + "To"
                                                             + receiverCheckedNumber
                                                             + "You new Account Balance is Ksh:" + fromUpdatedBalance)
