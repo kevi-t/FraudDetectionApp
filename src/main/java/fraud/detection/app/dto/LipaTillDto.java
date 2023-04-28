@@ -10,11 +10,11 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class LipaBillDto {
+public class LipaTillDto {
 
     private String pin;
     private String payerNo;
-    private String payBillNo;
+    private String tillNo;
     private double amount;
 
 }

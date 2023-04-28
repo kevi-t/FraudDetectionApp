@@ -3,8 +3,8 @@ package fraud.detection.app.services;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import fraud.detection.app.configurations.TwilioConfiguration;
-import fraud.detection.app.dto.LipaBillDto;
-import fraud.detection.app.dto.LipaBillResponse;
+import fraud.detection.app.dto.LipaTillResponse;
+import fraud.detection.app.dto.LipaTillDto;
 import fraud.detection.app.models.Account;
 import fraud.detection.app.models.Transaction;
 import fraud.detection.app.repositories.AccountRepository;
@@ -14,6 +14,8 @@ import fraud.detection.app.utils.HelperUtility;
 import fraud.detection.app.utils.LogFileCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static fraud.detection.app.utils.HelperUtility.checkPhoneNumber;
 
 @Service
 @Slf4j
@@ -25,32 +27,32 @@ public class LipaBillService {
     private final AccountRepository accountRepository;
     private final TwilioConfiguration twilioConfiguration;
     private UniversalResponse response;
-    private final LipaBillResponse lipaBillResponse;
+    private final LipaTillResponse lipaTillResponse;
     String referenceCode = HelperUtility.referenceCodeGenerator();
 
     public LipaBillService(TransactionRepository transactionRepository
             , LogFileCreator logFileCreator
             , HelperUtility helperUtility
             , AccountRepository accountRepository
-            , TwilioConfiguration twilioConfiguration, LipaBillResponse lipaBillResponse) {
+            , TwilioConfiguration twilioConfiguration, LipaTillResponse lipaTillResponse) {
         this.transactionRepository = transactionRepository;
         this.logFileCreator = logFileCreator;
         this.helperUtility = helperUtility;
         this.accountRepository = accountRepository;
         this.twilioConfiguration = twilioConfiguration;
-        this.lipaBillResponse = lipaBillResponse;
+        this.lipaTillResponse = lipaTillResponse;
     }
 
-    public UniversalResponse lipaBill(LipaBillDto request) {
-
-        Account account=accountRepository.findByAccountNumber(request.getPayerNo());
+    public UniversalResponse lipaTill(LipaTillDto request) {
+        String CheckedPayerNumber = checkPhoneNumber((request.getPayerNo()));
+        Account account=accountRepository.findByAccountNumber(CheckedPayerNumber);
         System.out.println(account);
 
-        if (helperUtility.checkPin(request.getPin(),request.getPayerNo())) {
+        if (helperUtility.checkPin(request.getPin(),CheckedPayerNumber)) {
 
-            if (helperUtility.checkAccountBalance(request.getPayerNo(), request.getAmount())) {
+            if (helperUtility.checkAccountBalance(CheckedPayerNumber, request.getAmount())) {
 
-                account = accountRepository.findByAccountNumber(request.getPayerNo());
+                account = accountRepository.findByAccountNumber(CheckedPayerNumber);
                 double updatedAccountBalance = account.getAccountBalance() - request.getAmount();
                 //updating Accounts Table
                 double BeforeAccountBalance = account.getAccountBalance();
@@ -61,8 +63,8 @@ public class LipaBillService {
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
                         .transactionType("LIPABILL")
-                        .senderAccount(request.getPayerNo())
-                        .receiverAccount(request.getPayBillNo())
+                        .senderAccount(CheckedPayerNumber)
+                        .receiverAccount(request.getTillNo())
                         .status("success")
                         .transactionAmount(request.getAmount())
                         .ReferenceCode(referenceCode)
@@ -75,7 +77,7 @@ public class LipaBillService {
                     Message.creator(
                             new PhoneNumber(request.getPayerNo()),
                             new PhoneNumber(twilioConfiguration.getTrial_number()),
-                            "You have Payed Ksh:" + request.getAmount() + "To Paybill No:"+ request.getPayBillNo()
+                            "You have Payed Ksh:" + request.getAmount() + "To Paybill No:"+ request.getTillNo()
                             +"You new Account Balance is Ksh:" + updatedAccountBalance)
                             .create();
                 }
@@ -83,13 +85,13 @@ public class LipaBillService {
                     System.out.println("Error While Sending Transaction Message" + ex);
                     log.info("Error While Sending Transaction Message ==>" + ex);
                 }
-                lipaBillResponse.setAmount(request.getAmount());
-                lipaBillResponse.setRecievedBy(request.getPayBillNo());
-                lipaBillResponse.setBalance(account.getAccountBalance());
+                lipaTillResponse.setAmount(request.getAmount());
+                lipaTillResponse.setRecievedBy(request.getTillNo());
+                lipaTillResponse.setBalance(account.getAccountBalance());
                 return  UniversalResponse.builder()
                         .message("Transaction Successful")
                         .status("1")
-                        .data(lipaBillResponse)
+                        .data(lipaTillResponse)
                         .build();
             }
             else {
@@ -97,8 +99,8 @@ public class LipaBillService {
                 //Inserting Into transaction Table
                 Transaction trans = Transaction.builder()
                         .transactionType("LIPABILL")
-                        .senderAccount(request.getPayerNo())
-                        .receiverAccount(request.getPayBillNo())
+                        .senderAccount(CheckedPayerNumber)
+                        .receiverAccount(request.getTillNo())
                         .status("failed")
                         .transactionAmount(request.getAmount())
                         .ReferenceCode(referenceCode)
