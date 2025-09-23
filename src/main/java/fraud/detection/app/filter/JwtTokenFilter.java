@@ -20,89 +20,87 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final LogFileCreator logFileCreator;
-    private final UserDetailsService UserDetailsService;
+    private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
-    private SessionMsg msg = new SessionMsg();
+    private final SessionMsg msg = new SessionMsg();
+
+    // Define whitelisted paths that skip JWT check
+    private static final Set<String> WHITELIST = Set.of(
+            "/fraud/app/login",
+            "/fraud/app/register",
+            "/otp/send",
+            "/otp/verify",
+            "/stk-deposit-request",
+            "/otp/forgot/password/reset",
+            "/fraud/app/sendmoney",
+            "/otp/sendregisterotp"
+    );
 
     @Autowired
-    public JwtTokenFilter(LogFileCreator logFileCreator
-            , UserDetailsService userDetailsService
-            , JwtTokenUtil jwtTokenUtil) {
+    public JwtTokenFilter(LogFileCreator logFileCreator,
+                          UserDetailsService userDetailsService,
+                          JwtTokenUtil jwtTokenUtil) {
         this.logFileCreator = logFileCreator;
-        UserDetailsService = userDetailsService;
+        this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getServletPath().equals("/fraud/app/login")) {
-            filterChain.doFilter(request, response);
-        }
-        else if (request.getServletPath().equals("/fraud/app/register")) {
-            filterChain.doFilter(request, response);
+        String path = request.getServletPath();
 
-        }
-        else if (request.getServletPath().equals("/otp/send")) {
+        // Skip JWT check for whitelisted paths
+        if (WHITELIST.contains(path)) {
             filterChain.doFilter(request, response);
+            return;
         }
-        else if (request.getServletPath().equals("/otp/verify")){
-            filterChain.doFilter(request, response);
-        }
-        else if (request.getServletPath().equals("/stk-deposit-request")){
-            filterChain.doFilter(request, response);
-        }
-        else if (request.getServletPath().equals("/otp/forgot/password/reset")){
-            filterChain.doFilter(request, response);
-        }
-        else if (request.getServletPath().equals("/fraud/app/sendmoney")){
-            filterChain.doFilter(request, response);
-        }
-        else if (request.getServletPath().equals("/otp/sendregisterotp")){
-            filterChain.doFilter(request, response);
-        }
-        else {
 
-            String authorizationHeader = request.getHeader("Authorization");
-            String token = null;
-            String username = null;
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        String username = null;
 
-                try {
-                    token = authorizationHeader.substring(8);
-                    username = jwtTokenUtil.extractUsername(token);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                token = authorizationHeader.substring(7).trim(); // fix parsing
+                username = jwtTokenUtil.extractUsername(token);
 
-                    if(username != null && SecurityContextHolder.getContext().getAuthentication()==null){
-                        UserDetails userDetails = UserDetailsService.loadUserByUsername(username);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                        if (jwtTokenUtil.validateToken(token, userDetails)) {
-                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
-                            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                            filterChain.doFilter(request, response);
-                        }
+                    if (jwtTokenUtil.validateToken(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authenticationToken =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails, null, userDetails.getAuthorities());
+
+                        authenticationToken.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request));
+
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
                 }
-                catch (Exception e) {
-                    log.info("exceptions " + e.getMessage());
-                    UniversalResponse errorResponse = msg.getSessionErrorMsg();
-                    String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse); // Convert UniversalResponse to JSON
-                    response.setContentType("application/json;charset=UTF-8"); // Set response content type to JSON
-                    response.setStatus(HttpServletResponse.SC_OK); // Set response status to 200 OK
-                    response.getWriter().write(jsonResponse); // Write JSON response to the response writer
-                }
-            }
-            else {
-                filterChain.doFilter(request, response);
-            }
+            } catch (Exception e) {
+                log.warn("JWT validation failed: {}", e.getMessage());
+                UniversalResponse errorResponse = msg.getSessionErrorMsg();
+                String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse);
 
+                response.setContentType("application/json;charset=UTF-8");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // send 401
+                response.getWriter().write(jsonResponse);
+                return; // stop filter chain on invalid token
+            }
         }
+
+        // Always continue if no error
+        filterChain.doFilter(request, response);
     }
 }
