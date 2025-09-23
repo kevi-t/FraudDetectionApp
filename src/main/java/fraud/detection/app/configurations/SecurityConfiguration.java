@@ -25,15 +25,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Transactional
-@org.springframework.transaction.annotation.Transactional
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfiguration {
 
-    private UserDetailsService userDetailsService;
-    private JwtTokenFilter JwtTokenfilter;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenFilter jwtTokenFilter; // make sure it's a @Component
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -42,41 +40,44 @@ public class SecurityConfiguration {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setPasswordEncoder(passwordEncoderD());
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        return authenticationProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests().requestMatchers
-                        ("/fraud/app/register",
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/fraud/app/register",
                                 "/fraud/app/login",
-                                "/otp/send","/otp/verify",
+                                "/otp/send", "/otp/verify",
                                 "/mobile-money/stk-deposit-request",
                                 "/mobile-money/token",
-                                "/fraud/app/withdraw", "/fraud/app/sendmoney"
-                                ,"/otp/forgot/password/reset"
-                                ,"/otp/sendregisterotp").permitAll()
-                .and()
-                .authorizeHttpRequests().requestMatchers
-                        ("/api/auth/getusers").hasAuthority("Admin")
-                .anyRequest().authenticated();
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(JwtTokenfilter, UsernamePasswordAuthenticationFilter.class);
+                                "/fraud/app/withdraw", "/fraud/app/sendmoney",
+                                "/otp/forgot/password/reset",
+                                "/otp/sendregisterotp"
+                        ).permitAll()
+                        .requestMatchers("/api/auth/getusers").hasAuthority("Admin")
+                        .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoderD() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public OkHttpClient getOkHttpClient() {
+    public OkHttpClient okHttpClient() {
         return new OkHttpClient();
     }
 
@@ -84,12 +85,15 @@ public class SecurityConfiguration {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-
-        // Configure the date time format as per your requirement
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy:dd:MM HH:mm:ss")));
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy:dd:MM HH:mm:ss")));
+        javaTimeModule.addSerializer(
+                LocalDateTime.class,
+                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy:dd:MM HH:mm:ss"))
+        );
+        javaTimeModule.addDeserializer(
+                LocalDateTime.class,
+                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy:dd:MM HH:mm:ss"))
+        );
         objectMapper.registerModule(javaTimeModule);
         return objectMapper;
     }
-
 }
